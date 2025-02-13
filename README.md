@@ -4,15 +4,40 @@
 
 该项目是一个 RPA 自动化工具，主要用于在淘宝、京东、拼多多、抖音、快手、唯品会等平台进行直播自动化开播。项目基于 Spring Boot 构建，使用了许多流行的 Java 工具库来实现不同平台的自动化操作。
 
+---
+
 ## 项目架构介绍
 
 ### 核心模块
 
 - **Spring Boot**：用于构建 Web 应用程序。
 - **Spring Cloud OpenFeign**：用于与外部服务进行通信，简化 HTTP 请求的调用。
-- **SikuliX API**：用于实现图像识别和自动化的操作，可以模拟用户输入（鼠标点击、键盘输入等）。
+- **SikuliX API**：用于实现图像识别和自动化操作，可以模拟用户输入（鼠标点击、键盘输入等）。
 - **Caffeine**：用于缓存机制，提高性能。
-- **Hutool** 和 **Guava**：用于提供丰富的工具类，简化常见操作。
+- **Hutool** 和 **Guava**：提供丰富的工具类，简化常见操作。
+
+### 项目依赖 JDK 17
+
+在 `pom.xml` 中，已经指定了 JDK 17 作为项目的 JDK 版本，确保项目使用 JDK 17 编译和运行：
+
+```xml
+<properties>
+    <maven.compiler.source>17</maven.compiler.source>
+    <maven.compiler.target>17</maven.compiler.target>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <spring-cloud.version>2024.0.0</spring-cloud.version>
+</properties>
+```
+
+#### 通过 JVM 参数禁用无头模式
+
+如果通过命令行启动应用程序，可以使用以下命令关闭无头模式：
+
+```bash
+java -Djava.awt.headless=false -jar your-application.jar
+```
+
+---
 
 ### 模块划分
 
@@ -20,15 +45,18 @@
 - **其他平台模块**（京东、拼多多、抖音、快手、唯品会等）：这些模块尚未完成，未来将添加对这些平台的支持。
 - **公共模块**：用于图像识别、自动点击、日志管理、错误处理等功能的实现。
 
-### 依赖管理
+---
 
-- 该项目使用了 Spring Boot 的 `spring-boot-starter`，Spring Cloud 的 `spring-cloud-starter-openfeign`，并使用了多个库来实现不同的功能，例如：
-    - **SikuliX**：用于图像识别操作。
-    - **pcap4j**：用于网络包捕获。
-    - **fastjson2**：用于 JSON 解析。
-    - **Caffeine**：用于缓存操作。
+## 依赖管理
 
-- 项目采用了 Maven 构建工具，使用 `pom.xml` 管理依赖，并配置了多个开发环境的配置文件。
+该项目使用了多个库来实现不同的功能，例如：
+
+- **SikuliX**：用于图像识别操作。
+- **pcap4j**：用于网络包捕获。
+- **fastjson2**：用于 JSON 解析。
+- **Caffeine**：用于缓存操作。
+
+项目采用了 Maven 构建工具，使用 `pom.xml` 管理依赖，并配置了多个开发环境的配置文件。
 
 ---
 
@@ -55,7 +83,6 @@
 ### 4. **测试与部署**
 - [ ] **单元测试**：编写单元测试，确保每个模块的功能正确性。
 - [ ] **集成测试**：集成测试，确保平台之间协同工作的正确性。
-- [ ] **Docker 部署**：将项目打包为 Docker 镜像，方便部署和运行。
 
 ---
 
