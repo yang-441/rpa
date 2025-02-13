@@ -38,4 +38,6 @@ public interface GlobalCodeConstants {
 
     ResultCode UNKNOWN = new ResultCode(999, "未知错误");
 
+    ResultCode FAILED = new ResultCode(1001, "操作失败");
+
 }
