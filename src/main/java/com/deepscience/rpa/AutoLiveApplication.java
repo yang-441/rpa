@@ -1,5 +1,6 @@
 package com.deepscience.rpa;
 
+import ch.qos.logback.classic.Level;
 import cn.hutool.extra.spring.SpringUtil;
 import com.deepscience.rpa.common.service.LoggingService;
 import com.deepscience.rpa.model.login.service.LoginBindService;
@@ -44,9 +45,14 @@ public class AutoLiveApplication implements CommandLineRunner {
             }
         }
         // 根据启动参数自动配置日志级别
-        LoggingService loggingService = SpringUtil.getBean(LoggingService.class);
-        for (Map.Entry<String, String> entry : loggingService.getAllLogLevelConfig().entrySet()) {
-            loggingService.setLogLevel(entry.getKey(), Objects.isNull(logLevel) ? entry.getValue() : logLevel);
+        Level level = Level.valueOf(logLevel);
+        if (level != null) {
+            LoggingService loggingService = SpringUtil.getBean(LoggingService.class);
+            for (Map.Entry<String, String> entry : loggingService.getAllLogLevelConfig().entrySet()) {
+                if (!Objects.equals(entry.getValue(), logLevel)) {
+                    loggingService.setLogLevel(entry.getKey(),  level);
+                }
+            }
         }
         // 校验绑定状态
         try {

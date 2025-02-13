@@ -10,6 +10,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 /**
@@ -30,27 +31,33 @@ public class LoggingService {
      * @param loggerName 日志记录器的名称
      * @param level 日志级别
      */
-    public void setLogLevel(String loggerName, String level) {
+    public void setLogLevel(String loggerName, Level level) {
+        if (Objects.isNull(level)) {
+            return;
+        }
         log.info("调整日志记录器 [{}] 的日志级别为 [{}]", loggerName, level);
         // 获取LoggerContext
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
 
         // 获取指定名称的 Logger
         Logger logger = context.getLogger(loggerName);
-        logger.setLevel(Level.valueOf(level));
+        logger.setLevel(level);
     }
 
     /**
      * 全局修改所有日志记录器的日志级别
      * @param level 日志级别
      */
-    public void setGlobalLogLevel(String level) {
+    public void setGlobalLogLevel(Level level) {
+        if (Objects.isNull(level)) {
+            return;
+        }
         // 获取LoggerContext
         LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
 
         // 遍历所有日志记录器并设置日志级别
         for (Logger logger : context.getLoggerList()) {
-            logger.setLevel(Level.valueOf(level));
+            logger.setLevel(level);
         }
     }
 
