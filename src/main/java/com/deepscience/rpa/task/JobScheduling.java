@@ -117,6 +117,18 @@ public class JobScheduling {
     }
 
     /**
+     * 重试上报
+     */
+    @Scheduled(initialDelay = 1000, fixedRate = 200)
+    public void retryReport() {
+        try {
+            actionEventReportService.retryReport();
+        } catch (Exception e) {
+            log.error("retryReport error", e);
+        }
+    }
+
+    /**
      * 添加任务
      * @param task 任务
      */

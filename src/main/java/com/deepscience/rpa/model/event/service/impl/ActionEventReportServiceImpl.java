@@ -10,11 +10,13 @@ import com.deepscience.rpa.rpc.api.event.ActionEventReportApi;
 import com.deepscience.rpa.rpc.api.event.dto.ActionEventReportDTO;
 import com.deepscience.rpa.rpc.api.event.enums.ActionEventEnum;
 import com.deepscience.rpa.rpc.api.live.dto.LivePlanDTO;
+import feign.RetryableException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.Objects;
+import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * 执行事件上报服务
@@ -25,6 +27,11 @@ import java.util.Objects;
 @Service
 @RequiredArgsConstructor
 public class ActionEventReportServiceImpl implements ActionEventReportService {
+
+    /**
+     * 重试队列
+     */
+    private static final LinkedBlockingDeque<LivePlanDTO> RETRY_QUEUE = new LinkedBlockingDeque<>();
 
     /**
      * 事件上报服务
@@ -52,6 +59,16 @@ public class ActionEventReportServiceImpl implements ActionEventReportService {
     }
 
     /**
+     * 定时将重试队列中的任务消费
+     */
+    public void retryReport() {
+        LivePlanDTO livePlanDTO = RETRY_QUEUE.poll();
+        if (Objects.nonNull(livePlanDTO)) {
+            reportInfo(livePlanDTO);
+        }
+    }
+
+    /**
      * 开播上报
      * @param livePlan 直播计划信息
      */
@@ -67,7 +84,16 @@ public class ActionEventReportServiceImpl implements ActionEventReportService {
         dto.setLiveAccount(liveId);
         dto.setLiveUrl(pushUrl);
         dto.setActionEvent(ActionEventEnum.START_LIVING);
-        CommonResult<Boolean> resp = actionEventReportApi.actionEventReport(dto);
+        CommonResult<Boolean> resp;
+        try {
+            resp = actionEventReportApi.actionEventReport(dto);
+        } catch (RetryableException retryableException) {
+            // 记录异常请求
+            log.error("开播上报远程接口调用失败: {}", livePlan);
+            // 存入缓存中等待重试
+            RETRY_QUEUE.add(livePlan);
+            throw retryableException;
+        }
         boolean result = resp.isSuccess() && Boolean.TRUE.equals(resp.getData());
         if (result) {
             log.info("开播上报成功, id: {}, liveAccount: {}", dto.getPlanId(), dto.getLiveAccount());
@@ -75,6 +101,7 @@ public class ActionEventReportServiceImpl implements ActionEventReportService {
         } else {
             log.error("开播上报失败, id: {}, liveAccount: {}", dto.getPlanId(), dto.getLiveAccount());
         }
+
         return result;
     }
 
@@ -100,7 +127,16 @@ public class ActionEventReportServiceImpl implements ActionEventReportService {
         ActionEventReportDTO dto = convert(livePlan);
         dto.setLiveAccount(liveId);
         dto.setActionEvent(ActionEventEnum.END_LIVING);
-        CommonResult<Boolean> resp = actionEventReportApi.actionEventReport(dto);
+        CommonResult<Boolean> resp;
+        try {
+            resp = actionEventReportApi.actionEventReport(dto);
+        } catch (RetryableException retryableException) {
+            // 记录异常请求
+            log.error("开播上报远程接口调用失败: {}", livePlan);
+            // 存入缓存中等待重试
+            RETRY_QUEUE.add(livePlan);
+            throw retryableException;
+        }
         boolean result = resp.isSuccess() && Boolean.TRUE.equals(resp.getData());
         if (result) {
             log.info("关播上报成功, id: {}, liveAccount: {}", dto.getPlanId(), dto.getLiveAccount());

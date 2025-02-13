@@ -13,4 +13,9 @@ public interface ActionEventReportService {
      * @param livePlan 直播计划信息
      */
     boolean reportInfo(LivePlanDTO livePlan);
+
+    /**
+     * 重试上报直播计划信息
+     */
+    void retryReport();
 }
