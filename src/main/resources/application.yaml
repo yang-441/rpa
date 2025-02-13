@@ -1,0 +1,32 @@
+spring:
+  application:
+    name: auto-live
+    version: 0.0.1
+  jackson:
+    date-format: "yyyy-MM-dd HH:mm:ss"
+
+
+  profiles:
+    active: @env@
+
+logging:
+  file:
+    name: ./logs/${spring.application.name}.log # 日志文件名，全路径
+  level:
+    com.deepscience: @logLevel@
+
+app:
+  frame:
+    main:
+      width: 400
+      height: 160
+      msg-width: 260
+      msg-height: 20
+      debug-height: 200
+
+taobao:
+  event:
+    startLive:
+      maxRetryTime: 3
+    endLive:
+      maxRetryTime: 3

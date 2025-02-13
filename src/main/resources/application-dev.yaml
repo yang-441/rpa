@@ -1,0 +1,3 @@
+rpa:
+  server:
+    apiUrl: http://hzproxy.kazava.cn:8222/api

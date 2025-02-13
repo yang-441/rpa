@@ -1,0 +1,126 @@
+package com.deepscience.rpa.model.event.service.impl;
+
+import cn.hutool.core.util.StrUtil;
+import com.deepscience.rpa.common.container.VariableContainer;
+import com.deepscience.rpa.common.context.ActionContext;
+import com.deepscience.rpa.common.pojo.CommonResult;
+import com.deepscience.rpa.model.event.service.ActionEventReportService;
+import com.deepscience.rpa.model.live.service.LivePlanService;
+import com.deepscience.rpa.rpc.api.event.ActionEventReportApi;
+import com.deepscience.rpa.rpc.api.event.dto.ActionEventReportDTO;
+import com.deepscience.rpa.rpc.api.event.enums.ActionEventEnum;
+import com.deepscience.rpa.rpc.api.live.dto.LivePlanDTO;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+
+import java.util.Objects;
+
+/**
+ * 执行事件上报服务
+ * @author yangzhuo
+ * @date 2025/2/11 17:18
+ */
+@Slf4j
+@Service
+@RequiredArgsConstructor
+public class ActionEventReportServiceImpl implements ActionEventReportService {
+
+    /**
+     * 事件上报服务
+     */
+    private final ActionEventReportApi actionEventReportApi;
+
+    /**
+     * 直播计划服务
+     */
+    private final LivePlanService livePlanService;
+
+    @Override
+    public boolean reportInfo(LivePlanDTO livePlan) {
+        if (Objects.isNull(livePlan)) {
+            return false;
+        }
+        ActionEventEnum actionEvent = livePlan.getActionEvent();
+        if (Objects.isNull(actionEvent)) {
+            return false;
+        }
+        return switch (actionEvent) {
+            case START_LIVING -> reportStartLivingInfo(livePlan);
+            case END_LIVING -> reportEndLivingInfo(livePlan);
+        };
+    }
+
+    /**
+     * 开播上报
+     * @param livePlan 直播计划信息
+     */
+    private boolean reportStartLivingInfo(LivePlanDTO livePlan) {
+        ActionContext actionContext = VariableContainer.getActionContext();
+        String liveId = actionContext.getLiveId();
+        String pushUrl = actionContext.getPushUrl();
+        if (Objects.isNull(liveId) || Objects.isNull(pushUrl)) {
+            log.error("开播上报失败, liveId: {}, pushUrl: {}", liveId, pushUrl);
+            return false;
+        }
+        ActionEventReportDTO dto = convert(livePlan);
+        dto.setLiveAccount(liveId);
+        dto.setLiveUrl(pushUrl);
+        dto.setActionEvent(ActionEventEnum.START_LIVING);
+        CommonResult<Boolean> resp = actionEventReportApi.actionEventReport(dto);
+        boolean result = resp.isSuccess() && Boolean.TRUE.equals(resp.getData());
+        if (result) {
+            log.info("开播上报成功, id: {}, liveAccount: {}", dto.getPlanId(), dto.getLiveAccount());
+            livePlanService.removeLivePlan(livePlan);
+        } else {
+            log.error("开播上报失败, id: {}, liveAccount: {}", dto.getPlanId(), dto.getLiveAccount());
+        }
+        return result;
+    }
+
+    /**
+     * 关播上报
+     * @param livePlan 直播计划信息
+     */
+    private boolean reportEndLivingInfo(LivePlanDTO livePlan) {
+        ActionContext actionContext = VariableContainer.getActionContext();
+        String liveId = actionContext.getLiveId();
+        if (StrUtil.isEmpty(liveId)) {
+            log.error("关播上报失败, liveId: {}", livePlan.getLiveAccount());
+            return false;
+        }
+        if (actionContext.isHasNext()) {
+            log.error("关播上报失败, 关播执行异常, livePlan: {}", livePlan);
+            return false;
+        }
+        if (!Objects.equals(liveId, livePlan.getLiveAccount())) {
+            log.error("关播上报异常, 关闭的直播间id和执行任务直播间id不一致, liveId: {}, playPlanCode: {}",
+                    liveId, livePlan.getLiveAccount());
+        }
+        ActionEventReportDTO dto = convert(livePlan);
+        dto.setLiveAccount(liveId);
+        dto.setActionEvent(ActionEventEnum.END_LIVING);
+        CommonResult<Boolean> resp = actionEventReportApi.actionEventReport(dto);
+        boolean result = resp.isSuccess() && Boolean.TRUE.equals(resp.getData());
+        if (result) {
+            log.info("关播上报成功, id: {}, liveAccount: {}", dto.getPlanId(), dto.getLiveAccount());
+            livePlanService.removeLivePlan(livePlan);
+        } else {
+            log.error("关播上报失败, id: {}, liveAccount: {}", dto.getPlanId(), dto.getLiveAccount());
+        }
+        return result;
+    }
+
+    /**
+     * 转换直播计划信息
+     * @param livePlan 直播计划
+     * @return ActionEventReportDTO
+     */
+    private ActionEventReportDTO convert(LivePlanDTO livePlan) {
+        ActionEventReportDTO dto = new ActionEventReportDTO();
+        dto.setPlanId(livePlan.getId());
+        dto.setPlayPlatform(livePlan.getPlayPlatform());
+        dto.setPlayPlanCode(livePlan.getPlayPlanCode());
+        return dto;
+    }
+}
