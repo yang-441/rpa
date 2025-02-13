@@ -38,7 +38,13 @@ public class LivePlanServiceImpl implements LivePlanService {
 
     @Override
     public void updateLivePlanTaskQueue() {
-        List<LivePlanDTO> livePlanDTOS = getUnreportedLivePlan();
+        List<LivePlanDTO> livePlanDTOS;
+        try {
+            livePlanDTOS = getUnreportedLivePlan();
+        } catch (Exception e) {
+            log.error("更新直播计划队列执行异常", e);
+            return;
+        }
         log.info("[更新直播计划队列], 时间: {}, 获取当前直播计划: {}", DateUtil.now(), livePlanDTOS);
         synchronized (this) {
             // 更新队列
