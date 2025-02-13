@@ -7,9 +7,7 @@ package com.deepscience.rpa.rpc.constants;
  */
 public class ApiConstants {
     /**
-     * 服务名-login
+     * 请求前缀
      */
-    public static final String NAME = "rpa-server";
-
     public static final String PREFIX = "/rpa";
 }

@@ -20,6 +20,10 @@ public class FeignConfig {
      */
     private final AppConfig appConfig;
 
+    /**
+     * feign请求拦截器, 调用之前添加请求头
+     * @return RequestInterceptor 请求拦截器
+     */
     @Bean
     public RequestInterceptor requestInterceptor() {
         return template -> {

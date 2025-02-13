@@ -43,10 +43,12 @@ public class AutoLiveApplication implements CommandLineRunner {
                 break;
             }
         }
+        // 根据启动参数自动配置日志级别
         LoggingService loggingService = SpringUtil.getBean(LoggingService.class);
         for (Map.Entry<String, String> entry : loggingService.getAllLogLevelConfig().entrySet()) {
             loggingService.setLogLevel(entry.getKey(), Objects.isNull(logLevel) ? entry.getValue() : logLevel);
         }
+        // 校验绑定状态
         try {
             LoginBindService loginBindService = SpringUtil.getBean(LoginBindService.class);
             loginBindService.isValidBind();
