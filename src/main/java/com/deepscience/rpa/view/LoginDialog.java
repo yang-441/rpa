@@ -250,7 +250,7 @@ public class LoginDialog {
         Optional.ofNullable(passwordField).ifPresent(field -> field.setText(""));
     }
 
-    private void resetMsg() {
+    public void resetMsg() {
         String msg = Optional.ofNullable(msgLabel).map(JLabel::getText).orElse(null);
         if (!DEFAULT_MSG.equals(msg)) {
             MsgUtils.writeInfoMsg(msgLabel, DEFAULT_MSG);

@@ -362,6 +362,7 @@ public class MainFrame {
      */
     public synchronized void showLoginDialog() {
         loginDialog.setVisible(true);
+        loginDialog.resetMsg();
         frame.setVisible(false);
     }
 
