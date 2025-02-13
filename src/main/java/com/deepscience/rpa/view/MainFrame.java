@@ -4,8 +4,12 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import com.deepscience.rpa.common.config.properties.MainFrameProperties;
+import com.deepscience.rpa.common.constants.HtmlTemplateConstants;
 import com.deepscience.rpa.common.container.VariableContainer;
 import com.deepscience.rpa.common.enums.RunningStateEnum;
+import com.deepscience.rpa.model.login.service.LoginBindService;
+import com.deepscience.rpa.model.version.service.VersionService;
+import com.deepscience.rpa.rpc.api.version.dto.VersionInfoDTO;
 import com.deepscience.rpa.util.ConfigUtils;
 import com.deepscience.rpa.util.ImageUtils;
 import com.deepscience.rpa.util.MsgUtils;
@@ -20,8 +24,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 
 import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
 import java.awt.*;
 import java.awt.event.WindowEvent;
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -74,20 +82,51 @@ public class MainFrame {
      */
     private final CloseEventListener closeEventListener;
 
+    /**
+     * 版本号服务
+     */
+    private final VersionService versionService;
+
+    /**
+     * 登录绑定服务
+     */
+    private final LoginBindService loginBindService;
+
     public void run() {
         // 运行窗口可见性
         boolean visible = true;
         // 登录窗口出现时, 关闭主窗口
-        Optional.ofNullable(SpringUtil.getBean(MainFrame.class))
-                .ifPresent(mainFrame -> mainFrame.setVisible(false));
+        Optional.ofNullable(SpringUtil.getBean(MainFrame.class)).ifPresent(mainFrame -> mainFrame.setVisible(false));
         // debug模式, 添加一些调试元素
         boolean debugEnabled = log.isDebugEnabled();
         // 配置信息
         String version = SpringUtil.getProperty("spring.application.version", "unknown");
         String active = SpringUtil.getProperty("spring.profiles.active", "unknown");
 
-        String title = StrUtil.format("自动开播RPA工具 [{}_{}]{}",
-                version, active, log.isDebugEnabled() ? "debug" : "");
+        VersionInfoDTO versionInfo;
+        try {
+            // 校验版本号
+            versionInfo = versionService.checkVersion(version);
+            loginBindService.isValidBind();
+        } catch (Exception e) {
+            log.error("程序启动时, 接口调用失败", e);
+            versionInfo = null;
+        }
+
+        // 是否强制更新
+        boolean forceUpdate = Optional.ofNullable(versionInfo)
+                .map(v -> Boolean.TRUE.equals(v.getForceUpdate()))
+                .orElse(true);
+
+        if (forceUpdate) {
+            // 创建 JEditorPane 显示 HTML 内容
+            JDialog editorPane = createDialog(versionInfo);
+            // 退出程序
+            System.exit(0);
+        }
+
+        // 应用标题
+        String title = StrUtil.format("自动开播RPA工具 [{}_{}]{}", version, active, log.isDebugEnabled() ? "debug" : "");
 
         // 创建 JFrame 窗口
         frame = new JFrame(title);
@@ -98,10 +137,7 @@ public class MainFrame {
         frame.setAlwaysOnTop(true);
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setResizable(false);
-        frame.setSize(
-                mainFrameProperties.getWidth(),
-                debugEnabled ? mainFrameProperties.getDebugHeight() : mainFrameProperties.getHeight()
-        );
+        frame.setSize(mainFrameProperties.getWidth(), debugEnabled ? mainFrameProperties.getDebugHeight() : mainFrameProperties.getHeight());
         // 将窗口设置在屏幕中心
         frame.setLocationRelativeTo(null);
         // 创建主界面
@@ -110,8 +146,7 @@ public class MainFrame {
 
         // 创建登录绑定对话框
         String clientCredentials = ConfigUtils.getClientCredentials();
-        String loginTitle = StrUtil.format("绑定设备 [{}_{}]{}",
-                version, active, log.isDebugEnabled() ? "debug" : "");
+        String loginTitle = StrUtil.format("绑定设备 [{}_{}]{}", version, active, log.isDebugEnabled() ? "debug" : "");
         loginDialog = new LoginDialog(loginTitle);
         if (StrUtil.isEmpty(clientCredentials)) {
             loginDialog.setVisible(true);
@@ -138,9 +173,7 @@ public class MainFrame {
         createMainFunctionButton(mainPanel);
 
         // 创建消息框
-        JLabel msgLabel = FrameUtils.createMsgPanel(mainPanel,
-                VariableContainer.isRunning() ? "运行中..." : "选择直播工作台，点击启动!",
-                mainFrameProperties.getMsgWidth(), mainFrameProperties.getMsgHeight());
+        JLabel msgLabel = FrameUtils.createMsgPanel(mainPanel, VariableContainer.isRunning() ? "运行中..." : "选择直播工作台，点击启动!", mainFrameProperties.getMsgWidth(), mainFrameProperties.getMsgHeight());
         VariableContainer.setMessageLabel(msgLabel);
         if (VariableContainer.isRunning()) {
             MsgUtils.writeSuccessMsg("运行中, 等待任务执行...");
@@ -154,6 +187,72 @@ public class MainFrame {
 
         // 设置窗口可见
         frame.setVisible(visible);
+    }
+
+    private static JDialog createDialog(VersionInfoDTO versionInfo) {
+        String msg;
+        int width;
+        int height;
+        if (Objects.isNull(versionInfo)) {
+            msg = HtmlTemplateConstants.SERVER_ERROR_TEMPLATE;
+            width = 360;
+            height = 128;
+        } else {
+            if (StrUtil.isEmpty(versionInfo.getHtmlNotice())) {
+                msg = StrUtil.format(HtmlTemplateConstants.UPDATE_NOTICE_TEMPLATE,
+                        versionInfo.getVersion(), versionInfo.getLatestVersion(),
+                        versionInfo.getNotice(), versionInfo.getDownloadUrl());
+            } else {
+                msg = versionInfo.getHtmlNotice();
+            }
+            width = 400;
+            height = 280;
+        }
+        JEditorPane editorPane = new JEditorPane("text/html", msg);
+        // 设置为不可编辑
+        editorPane.setEditable(false);
+        // 设置背景色为白色
+        editorPane.setBackground(Color.WHITE);
+
+        // 创建 JDialog 来显示消息框，并设置为始终置顶
+        JDialog dialog = new JDialog();
+        dialog.setTitle("版本校验");
+        // 设置为模态对话框
+        dialog.setModalityType(Dialog.ModalityType.APPLICATION_MODAL);
+        // 设置对话框总是显示在最上层
+        dialog.setAlwaysOnTop(true);
+        // 禁止调整大小
+        dialog.setResizable(false);
+        dialog.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
+
+        // 将 JEditorPane 放入滚动面板中，防止内容过长时出现滚动条
+        JScrollPane scrollPane = new JScrollPane(editorPane);
+        dialog.add(scrollPane, BorderLayout.CENTER);
+
+        // 为超链接添加点击事件
+        editorPane.addHyperlinkListener(e -> {
+            if (HyperlinkEvent.EventType.ACTIVATED.equals(e.getEventType())) {
+                try {
+                    // 打开链接
+                    URI uri = new URI(e.getURL().toString());
+                    // 使用默认浏览器打开链接
+                    Desktop.getDesktop().browse(uri);
+                    // 关闭dialog
+                    dialog.dispose();
+                } catch (IOException | URISyntaxException ex) {
+                    log.error(StrUtil.format("Failed to open link: {}", e.getURL()), ex);
+                }
+            }
+        });
+
+        // 设置对话框的大小和位置
+        // 设置对话框的大小
+        dialog.setSize(width, height);
+        // 将对话框居中显示
+        dialog.setLocationRelativeTo(null);
+        // 显示对话框
+        dialog.setVisible(true);
+        return dialog;
     }
 
     /**
@@ -232,7 +331,7 @@ public class MainFrame {
     private void createMainFunctionButton(JPanel mainPanel) {
         // 调试按钮
         JButton debug = null;
-        if(log.isDebugEnabled()) {
+        if (log.isDebugEnabled()) {
             debug = new JButton("调试");
             debug.setFocusPainted(false);
             debug.addActionListener(debugEventListener);

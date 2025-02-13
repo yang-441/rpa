@@ -3,7 +3,6 @@ package com.deepscience.rpa;
 import ch.qos.logback.classic.Level;
 import cn.hutool.extra.spring.SpringUtil;
 import com.deepscience.rpa.common.service.LoggingService;
-import com.deepscience.rpa.model.login.service.LoginBindService;
 import com.deepscience.rpa.view.MainFrame;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -53,13 +52,6 @@ public class AutoLiveApplication implements CommandLineRunner {
                     loggingService.setLogLevel(entry.getKey(),  level);
                 }
             }
-        }
-        // 校验绑定状态
-        try {
-            LoginBindService loginBindService = SpringUtil.getBean(LoginBindService.class);
-            loginBindService.isValidBind();
-        } catch (Exception e) {
-            log.error("程序启动时, 校验绑定失败", e);
         }
 
         // 在 Swing 事件分发线程中启动 GUI
