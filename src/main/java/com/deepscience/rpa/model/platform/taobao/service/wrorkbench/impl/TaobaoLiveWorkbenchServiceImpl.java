@@ -250,7 +250,7 @@ public class TaobaoLiveWorkbenchServiceImpl implements TaobaoLiveWorkbenchServic
         Match createMatch = ScreenUtils.matchImg(TaobaoImageEnum.CREATE_SESSION);
         if (Objects.nonNull(createMatch) && createMatch.click() == 1) {
             MsgUtils.writeSuccessMsg("执行创建场次...");
-            ThreadUtil.safeSleep(1000);
+            ThreadUtil.safeSleep(5000);
             return true;
         }
         return false;
