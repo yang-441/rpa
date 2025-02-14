@@ -258,7 +258,7 @@
                             <dontWrapJar>false</dontWrapJar>
                             <headerType>gui</headerType>
                             <jar>${project.build.directory}/${project.build.finalName}.jar</jar>
-                            <outfile>${project.build.directory}/${project.build.finalName}.exe</outfile>
+                            <outfile>${project.build.directory}/自动开关播工具.exe</outfile>
                             <errTitle>RPA runtime support</errTitle>
                             <cmdLine>--logLevel=info</cmdLine>
                             <chdir>.</chdir>
