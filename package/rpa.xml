@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<launch4jConfig>
+  <dontWrapJar>false</dontWrapJar>
+  <headerType>gui</headerType>
+  <jar>.\target\rpa.jar</jar>
+  <outfile>.\target\rpa.exe</outfile>
+  <errTitle>RPA runtime support</errTitle>
+  <cmdLine>--logLevel=info</cmdLine>
+  <chdir>.</chdir>
+  <priority>normal</priority>
+  <downloadUrl>https://docs.aws.amazon.com/corretto/latest/corretto-17-ug/downloads-list.html</downloadUrl>
+  <supportUrl></supportUrl>
+  <stayAlive>true</stayAlive>
+  <restartOnCrash>false</restartOnCrash>
+  <manifest></manifest>
+  <icon>.\classes\static\favicon.ico</icon>
+  <jre>
+    <path>.\runtime\bin</path>
+    <requiresJdk>false</requiresJdk>
+    <requires64Bit>false</requires64Bit>
+    <minVersion>17</minVersion>
+    <maxVersion>23</maxVersion>
+    <initialHeapSize>128</initialHeapSize>
+    <maxHeapSize>512</maxHeapSize>
+    <opt>-Dfile.encoding=UTF-8</opt>
+    <opt>-Djava.awt.headless=false</opt>
+  </jre>
+</launch4jConfig>
