@@ -118,6 +118,8 @@ public class TaobaoLiveWorkbenchServiceImpl implements TaobaoLiveWorkbenchServic
                     endLiving();
                 }
                 actionContext.setHasNext(false);
+            } else {
+                log.error("创建场次页面判定失败");
             }
         }
 

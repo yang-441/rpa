@@ -5,7 +5,6 @@ import cn.hutool.core.util.StrUtil;
 import com.deepscience.rpa.common.container.VariableContainer;
 import com.deepscience.rpa.common.context.ActionContext;
 import com.deepscience.rpa.common.enums.ActionEnum;
-import com.deepscience.rpa.common.enums.RunningStateEnum;
 import com.deepscience.rpa.handler.action.ActionHandlerFactory;
 import com.deepscience.rpa.handler.event.EventHandler;
 import com.deepscience.rpa.model.platform.taobao.enums.TaobaoActionEnum;
@@ -58,8 +57,7 @@ public interface TaobaoEventHandler extends EventHandler {
                     // 异常处理
                     actionHandlerFactory.handler(getLivePlatform(), TaobaoActionEnum.CLOSE_AND_EXIT);
                 } else {
-                    RunningStateEnum state = VariableContainer.changeRunningState();
-                    MsgUtils.writeInfoMsg(StrUtil.format("切换运行状态, 当前状态[{}]", state.getDesc()));
+                    MsgUtils.writeInfoMsg(StrUtil.format("切换运行状态, 当前状态[停止]"));
                 }
                 break;
             }

@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -34,6 +35,7 @@ public class OCRTest {
 
     @Test
     public void ocrTest() {
+        System.out.println(Paths.get(System.getProperty("user.dir")));
         BufferedImage image = ImgUtil.read("C:\\Users\\yang\\autoLive\\2025-02-12\\1739337598919.png");
         BufferedImage bufferedImage = ImageUtils.resizeImage(image, 1.5f);
         String liveId = OCRUtils.readNumberText(bufferedImage);

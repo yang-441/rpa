@@ -35,7 +35,7 @@ public class TaobaoPushUrlListener implements Runnable {
     /**
      * 默认超时时间
      */
-    private final static long DEFAULT_TIMEOUT = 30_000;
+    private final static long DEFAULT_TIMEOUT = 60_000;
 
     /**
      * 默认监听过滤器

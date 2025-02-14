@@ -1,11 +1,14 @@
 package com.deepscience.rpa.util;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.PatternPool;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.sikuli.script.OCR;
 
 import java.awt.image.BufferedImage;
+import java.nio.file.Paths;
 import java.util.Objects;
 
 /**
@@ -13,7 +16,15 @@ import java.util.Objects;
  * @author yangzhuo
  * @date 2025/1/27 09:51
  */
+@Slf4j
 public class OCRUtils {
+
+    static {
+        String absolutePath = FileUtil.getAbsolutePath(Paths.get(System.getProperty("user.dir")) + "/runtime/tessdata");
+        log.info("OCR初始化路径：{}", absolutePath);
+        OCR.globalOptions().dataPath(absolutePath);
+    }
+
     /**
      * 识别数字
      * @param imagePath 图片地址
