@@ -16,6 +16,19 @@
 - **Caffeine**：用于缓存机制，提高性能。
 - **Hutool** 和 **Guava**：提供丰富的工具类，简化常见操作。
 
+
+### Maven打包
+
+#### 开发环境
+```bash
+mvn clean package -Pdev -U
+```
+
+#### 线上环境
+```bash
+mvn clean package -Ponline -U
+```
+
 ### 项目依赖 JDK 17
 
 在 `pom.xml` 中，已经指定了 JDK 17 作为项目的 JDK 版本，确保项目使用 JDK 17 编译和运行：
