@@ -324,7 +324,7 @@ public class TaobaoLiveWorkbenchServiceImpl implements TaobaoLiveWorkbenchServic
         if (Objects.nonNull(match) && match.click() == 1) {
             log.info("立即开播...");
             MsgUtils.writeSuccessMsg("立即开播...");
-            ThreadUtil.sleep(10, TimeUnit.SECONDS);
+            ThreadUtil.sleep(15, TimeUnit.SECONDS);
             return true;
         }
         return false;
