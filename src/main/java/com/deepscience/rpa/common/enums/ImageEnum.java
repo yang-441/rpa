@@ -1,5 +1,7 @@
 package com.deepscience.rpa.common.enums;
 
+import java.awt.image.BufferedImage;
+
 /**
  * 图片枚举接口
  * @author yangzhuo
@@ -11,6 +13,12 @@ public interface ImageEnum {
      * @return String
      */
     String getImagePath();
+
+    /**
+     * 获取图片
+     * @return BufferedImage 图片
+     */
+    BufferedImage getImage();
 
     /**
      * 获取图片匹配相似度

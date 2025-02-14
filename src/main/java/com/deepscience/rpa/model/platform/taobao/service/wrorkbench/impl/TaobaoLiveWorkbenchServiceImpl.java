@@ -405,7 +405,7 @@ public class TaobaoLiveWorkbenchServiceImpl implements TaobaoLiveWorkbenchServic
         if (Objects.nonNull(match)) {
             log.info("检测到滑块验证, 开始处理...");
         } else {
-            log.info("滑块验证通过...");
+            log.info("滑块验证未处理, 未检测到滑块");
             return false;
         }
         match = ScreenUtils.matchImg(TaobaoImageEnum.VERIFICATION_01);

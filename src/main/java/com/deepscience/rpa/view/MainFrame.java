@@ -131,7 +131,7 @@ public class MainFrame {
         // 创建 JFrame 窗口
         frame = new JFrame(title);
         // 设置窗口图标
-        ImageIcon icon = new ImageIcon(ImageUtils.getImagePath("images/company.png"));
+        ImageIcon icon = new ImageIcon(ImageUtils.getImage("images/company.png"));
         frame.setIconImage(icon.getImage());
         // 设置窗口置顶
         frame.setAlwaysOnTop(true);

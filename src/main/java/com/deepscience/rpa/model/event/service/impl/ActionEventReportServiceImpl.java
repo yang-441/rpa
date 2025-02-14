@@ -61,6 +61,7 @@ public class ActionEventReportServiceImpl implements ActionEventReportService {
     /**
      * 定时将重试队列中的任务消费
      */
+    @Override
     public void retryReport() {
         LivePlanDTO livePlanDTO = RETRY_QUEUE.poll();
         if (Objects.nonNull(livePlanDTO)) {

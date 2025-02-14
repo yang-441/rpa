@@ -1,16 +1,22 @@
 package com.deepscience.rpa.util;
 
+import cn.hutool.core.exceptions.ExceptionUtil;
+import cn.hutool.core.img.ImgUtil;
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.io.resource.ResourceUtil;
 import cn.hutool.core.util.StrUtil;
+import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.InputStream;
 
 /**
  * 图片工具类
  * @author yangzhuo
  * @date 2025/1/24 09:50
  */
+@Slf4j
 public class ImageUtils {
 
     /**
@@ -23,6 +29,21 @@ public class ImageUtils {
             return null;
         }
         return FileUtil.getAbsolutePath(imagePath);
+    }
+
+    /**
+     * 获取图片全路径
+     * @param imagePath 图片资源路径
+     * @return String
+     */
+    public static BufferedImage getImage(String imagePath) {
+        try {
+            InputStream stream = ResourceUtil.getStream(imagePath);
+            return ImgUtil.read(stream);
+        } catch (Exception e) {
+            log.error("get image error", e);
+            throw ExceptionUtil.wrapRuntime(e);
+        }
     }
 
     /**

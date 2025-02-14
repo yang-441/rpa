@@ -78,7 +78,7 @@ public class LoginDialog {
         mainDialog.setAlwaysOnTop(true);
         mainDialog.setTitle(finalTitle);
         // 设置窗口图标
-        ImageIcon icon = new ImageIcon(ImageUtils.getImagePath("images/company.png"));
+        ImageIcon icon = new ImageIcon(ImageUtils.getImage("images/company.png"));
         mainDialog.setIconImage(icon.getImage());
 
         // 创建主界面

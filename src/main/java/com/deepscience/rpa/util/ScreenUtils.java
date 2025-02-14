@@ -26,7 +26,7 @@ public class ScreenUtils {
      */
     public static Integer findScreenId(ImageEnum imageEnum) {
         int numberScreens = Screen.getNumberScreens();
-        Pattern pattern = new Pattern(imageEnum.getImagePath());
+        Pattern pattern = new Pattern(imageEnum.getImage());
         Integer id = ConfigUtils.getLastScreenId();
         // 优化屏幕查找
         if (Objects.nonNull(id) && id >= 0 && id < numberScreens) {
@@ -60,7 +60,7 @@ public class ScreenUtils {
     }
 
     public static Match matchImg(Match match, ImageEnum imageEnum, Double sim) {
-        Pattern pattern = new Pattern(imageEnum.getImagePath());
+        Pattern pattern = new Pattern(imageEnum.getImage());
         if (Objects.nonNull(sim)) {
             pattern.similar(sim);
         }
@@ -86,7 +86,7 @@ public class ScreenUtils {
     }
 
     public static Match matchImg(int id, ImageEnum imageEnum, Double timeout, Double sim) {
-        Pattern pattern = new Pattern(imageEnum.getImagePath());
+        Pattern pattern = new Pattern(imageEnum.getImage());
         if (Objects.nonNull(imageEnum.getSim())) {
             pattern.similar(imageEnum.getSim());
         }

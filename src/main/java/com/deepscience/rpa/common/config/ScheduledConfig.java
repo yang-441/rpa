@@ -19,7 +19,7 @@ public class ScheduledConfig {
         // 创建并配置线程池调度器
         ThreadPoolTaskScheduler scheduler = new ThreadPoolTaskScheduler();
         // 设置线程池的大小
-        scheduler.setPoolSize(5);
+        scheduler.setPoolSize(10);
         // 设置线程名前缀
         scheduler.setThreadNamePrefix("scheduled-task-");
         return scheduler;
