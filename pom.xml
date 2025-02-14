@@ -182,6 +182,7 @@
 
     <build>
         <finalName>${project.name}</finalName>
+
         <resources>
             <resource>
                 <directory>src/main/resources/</directory>
@@ -192,7 +193,9 @@
                 <filtering>true</filtering>
             </resource>
         </resources>
+
         <plugins>
+            <!-- Spring Boot Maven Plugin -->
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
@@ -201,6 +204,8 @@
                     <includeSystemScope>true</includeSystemScope>
                 </configuration>
             </plugin>
+
+            <!-- Maven Resources Plugin for Non-Filtered Files -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
@@ -210,7 +215,8 @@
                     </nonFilteredFileExtensions>
                 </configuration>
             </plugin>
-            <!-- 默认所有项目跳过测试 -->
+
+            <!-- Maven Surefire Plugin for skipping tests -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -218,6 +224,8 @@
                     <skipTests>true</skipTests>
                 </configuration>
             </plugin>
+
+            <!-- Maven Compiler Plugin for JDK 17 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -228,10 +236,53 @@
                         <path>
                             <groupId>org.projectlombok</groupId>
                             <artifactId>lombok</artifactId>
-                            <version>${lombok.version}</version> <!-- 使用最新版本 -->
+                            <version>${lombok.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>
+            </plugin>
+
+            <!-- Launch4j Maven Plugin to Create EXE -->
+            <plugin>
+                <groupId>com.akathist.maven.plugins.launch4j</groupId>
+                <artifactId>launch4j-maven-plugin</artifactId>
+                <version>2.5.3</version>
+                <executions>
+                    <execution>
+                        <id>launch4j</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>launch4j</goal>
+                        </goals>
+                        <configuration>
+                            <dontWrapJar>false</dontWrapJar>
+                            <headerType>gui</headerType>
+                            <jar>${project.build.directory}/${project.build.finalName}.jar</jar>
+                            <outfile>${project.build.directory}/${project.build.finalName}.exe</outfile>
+                            <errTitle>RPA runtime support</errTitle>
+                            <cmdLine>--logLevel=info</cmdLine>
+                            <chdir>.</chdir>
+                            <priority>normal</priority>
+                            <downloadUrl>https://docs.aws.amazon.com/corretto/latest/corretto-17-ug/downloads-list.html</downloadUrl>
+                            <stayAlive>true</stayAlive>
+                            <restartOnCrash>false</restartOnCrash>
+                            <requireAdminRights>true</requireAdminRights>
+                            <icon>${project.build.directory}/classes/static/favicon.ico</icon>
+                            <jre>
+                                <path>./runtime/bin</path>
+                                <requiresJdk>false</requiresJdk>
+                                <requires64Bit>false</requires64Bit>
+                                <minVersion>17</minVersion>
+                                <initialHeapSize>128</initialHeapSize>
+                                <maxHeapSize>512</maxHeapSize>
+                                <opts>
+                                    <opt>-Dfile.encoding=UTF-8</opt>
+                                    <opt>-Djava.awt.headless=false</opt>
+                                </opts>
+                            </jre>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>
