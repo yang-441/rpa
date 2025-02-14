@@ -545,7 +545,7 @@ public class TaobaoLiveWorkbenchServiceImpl implements TaobaoLiveWorkbenchServic
         ActionContext actionContext = VariableContainer.getActionContext();
         BufferedImage image = getLiveIdImage();
         if (Objects.nonNull(image)) {
-            for (int i = 0; i < 3; i++) {
+            for (int i = 0; i < 5; i++) {
                 if (i > 0) {
                     image = ImageUtils.resizeImage(image, 1.5 * i);
                 }
@@ -574,12 +574,10 @@ public class TaobaoLiveWorkbenchServiceImpl implements TaobaoLiveWorkbenchServic
         // 截取该区域的屏幕图像
         ScreenImage capture = screen.capture(region);
         BufferedImage image = capture.getImage();
-        if (log.isDebugEnabled()) {
-            String base = AppFileConstants.BATE_PATH + FileUtil.FILE_SEPARATOR + DateUtil.today() + FileUtil.FILE_SEPARATOR + System.currentTimeMillis() + ".png";
-            log.debug("保存直播间id截屏, 路径: {}", base);
-            File file = FileUtil.touch(base);
-            ImgUtil.write(image, file);
-        }
+        String base = AppFileConstants.BATE_PATH + FileUtil.FILE_SEPARATOR + DateUtil.today() + FileUtil.FILE_SEPARATOR + System.currentTimeMillis() + ".png";
+        log.debug("保存直播间id截屏, 路径: {}", base);
+        File file = FileUtil.touch(base);
+        ImgUtil.write(image, file);
         return image;
     }
 
