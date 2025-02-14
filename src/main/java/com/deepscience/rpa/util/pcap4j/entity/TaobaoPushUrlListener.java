@@ -45,7 +45,7 @@ public class TaobaoPushUrlListener implements Runnable {
     /**
      * 淘宝直播推流码前缀
      */
-    private final static String BASE_HEX = "617274633a2f2f6c6976656e672d727463707573682e74616f62616f2e636f6d";
+    private final static String BASE_HEX = "617274633a2f2f";
 
     /**
      * 淘宝直播推流码后缀
@@ -167,6 +167,7 @@ public class TaobaoPushUrlListener implements Runnable {
         if (StrUtil.isEmpty(hexStr)) {
             return null;
         }
+        log.info("数据包捕获: {}", hexStr);
         int start = hexStr.indexOf(BASE_HEX);
         if (start < 0) {
             return null;
