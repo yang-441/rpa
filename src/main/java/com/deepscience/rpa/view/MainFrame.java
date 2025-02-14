@@ -1,6 +1,7 @@
 package com.deepscience.rpa.view;
 
 import cn.hutool.core.io.FileUtil;
+import cn.hutool.core.lang.Validator;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import com.deepscience.rpa.common.config.properties.MainFrameProperties;
@@ -30,6 +31,7 @@ import java.awt.event.WindowEvent;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.Optional;
 
@@ -103,27 +105,8 @@ public class MainFrame {
         String version = SpringUtil.getProperty("spring.application.version", "unknown");
         String active = SpringUtil.getProperty("spring.profiles.active", "unknown");
 
-        VersionInfoDTO versionInfo;
-        try {
-            // 校验版本号
-            versionInfo = versionService.checkVersion(version);
-            loginBindService.isValidBind();
-        } catch (Exception e) {
-            log.error("程序启动时, 接口调用失败", e);
-            versionInfo = null;
-        }
-
-        // 是否强制更新
-        boolean forceUpdate = Optional.ofNullable(versionInfo)
-                .map(v -> Boolean.TRUE.equals(v.getForceUpdate()))
-                .orElse(true);
-
-        if (forceUpdate) {
-            // 创建 JEditorPane 显示 HTML 内容
-            JDialog editorPane = createDialog(versionInfo);
-            // 退出程序
-            System.exit(0);
-        }
+        // 校验运行环境
+        checkRuntime(version);
 
         // 应用标题
         String title = StrUtil.format("自动开播RPA工具 [{}_{}]{}", version, active, log.isDebugEnabled() ? "debug" : "");
@@ -189,11 +172,41 @@ public class MainFrame {
         frame.setVisible(visible);
     }
 
-    private static JDialog createDialog(VersionInfoDTO versionInfo) {
+    /**
+     * 校验运行环境
+     * @param version 版本号
+     */
+    private void checkRuntime(String version) {
+        VersionInfoDTO versionInfo;
+        try {
+            // 校验版本号
+            versionInfo = versionService.checkVersion(version);
+            loginBindService.isValidBind();
+        } catch (Exception e) {
+            log.error("程序启动时, 接口调用失败", e);
+            versionInfo = null;
+        }
+        checkRuntime(versionInfo);
+    }
+
+    private void checkRuntime(VersionInfoDTO versionInfo) {
+        // 是否强制更新
+        boolean forceUpdate = Optional.ofNullable(versionInfo)
+                .map(v -> Boolean.TRUE.equals(v.getForceUpdate()))
+                .orElse(true);
+        // 校验运行目录
+        boolean hasChinese = Validator.hasChinese(Paths.get(System.getProperty("user.dir")).toString());
+        if (!forceUpdate && !hasChinese) {
+            return;
+        }
         String msg;
         int width;
         int height;
-        if (Objects.isNull(versionInfo)) {
+        if (hasChinese) {
+            msg = HtmlTemplateConstants.RUNTIME_ERROR_HAS_CHINESE;
+            width = 360;
+            height = 128;
+        } else if (Objects.isNull(versionInfo)) {
             msg = HtmlTemplateConstants.SERVER_ERROR_TEMPLATE;
             width = 360;
             height = 128;
@@ -252,7 +265,8 @@ public class MainFrame {
         dialog.setLocationRelativeTo(null);
         // 显示对话框
         dialog.setVisible(true);
-        return dialog;
+        // 退出程序
+        System.exit(0);
     }
 
     /**

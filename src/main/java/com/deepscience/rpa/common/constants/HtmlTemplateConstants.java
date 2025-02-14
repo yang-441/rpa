@@ -17,6 +17,16 @@ public class HtmlTemplateConstants {
             "</html>";
 
     /**
+     * 中文目录异常模板
+     */
+    public static final String RUNTIME_ERROR_HAS_CHINESE = "<html>" +
+            "<div style='text-align:center;'>" +
+            "<h2>目录环境异常</h2>" +
+            "<p>程序运行路径不能包含中文</p>" +
+            "</div>" +
+            "</html>";
+
+    /**
      * 更新公告模板
      */
     public static final String UPDATE_NOTICE_TEMPLATE = "<html>" +

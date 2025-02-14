@@ -8,6 +8,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.sikuli.script.OCR;
 
 import java.awt.image.BufferedImage;
+import java.lang.reflect.Field;
 import java.nio.file.Paths;
 import java.util.Objects;
 
@@ -22,7 +23,17 @@ public class OCRUtils {
     static {
         String absolutePath = FileUtil.getAbsolutePath(Paths.get(System.getProperty("user.dir")) + "/runtime/tessdata");
         log.info("OCR初始化路径：{}", absolutePath);
-        OCR.globalOptions().dataPath(absolutePath);
+        OCR.Options options = OCR.globalOptions();
+        // 获取 defaultDataPath 字段
+        try {
+            Field defaultDataPathField;
+            defaultDataPathField = options.getClass().getDeclaredField("defaultDataPath");
+            // 设置可访问私有字段
+            defaultDataPathField.setAccessible(true);
+            defaultDataPathField.set(options, absolutePath);
+        } catch (Exception e) {
+            log.error("OCR初始化路径失败", e);
+        }
     }
 
     /**
