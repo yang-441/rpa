@@ -5,6 +5,7 @@ import cn.hutool.core.img.ImgUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.resource.ResourceUtil;
 import cn.hutool.core.util.StrUtil;
+import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
 
 import java.awt.*;
@@ -38,7 +39,7 @@ public class ImageUtils {
      */
     public static BufferedImage getImage(String imagePath) {
         try {
-            InputStream stream = ResourceUtil.getStream(imagePath);
+            @Cleanup InputStream stream = ResourceUtil.getStream(imagePath);
             return ImgUtil.read(stream);
         } catch (Exception e) {
             log.error("get image error", e);
