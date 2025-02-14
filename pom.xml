@@ -198,6 +198,15 @@
                     <includeSystemScope>true</includeSystemScope>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-resources-plugin</artifactId>
+                <configuration>
+                    <nonFilteredFileExtensions>
+                        <nonFilteredFileExtension>traineddata</nonFilteredFileExtension>
+                    </nonFilteredFileExtensions>
+                </configuration>
+            </plugin>
             <!-- 默认所有项目跳过测试 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
