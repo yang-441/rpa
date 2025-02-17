@@ -194,6 +194,12 @@
             </resource>
         </resources>
 
+        <testResources>
+            <testResource>
+                <directory>src/main/resources/</directory>
+            </testResource>
+        </testResources>
+
         <plugins>
             <!-- Spring Boot Maven Plugin -->
             <plugin>
@@ -280,6 +286,11 @@
                                     <opt>-Djava.awt.headless=false</opt>
                                 </opts>
                             </jre>
+                            <!-- 单实例运行 -->
+                            <singleInstance>
+                                <!-- 互斥锁唯一名称 -->
+                                <mutexName>UniqueAppAutoLiveRpa</mutexName>
+                            </singleInstance>
                         </configuration>
                     </execution>
                 </executions>
