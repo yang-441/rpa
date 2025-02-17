@@ -18,4 +18,10 @@ public interface ActionEventReportService {
      * 重试上报直播计划信息
      */
     void retryReport();
+
+    /**
+     * 上报失败直播计划
+     * @param livePlan 直播计划信息
+     */
+    void errorReport(LivePlanDTO livePlan);
 }

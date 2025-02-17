@@ -7,9 +7,13 @@ import cn.hutool.core.io.resource.ResourceUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.Cleanup;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 
 /**
@@ -71,5 +75,25 @@ public class ImageUtils {
         // 释放资源
         g2d.dispose();
         return resizedImage;
+    }
+
+    /**
+     * 将 BufferedImage 转换为 MultipartFile
+     * @param image     BufferedImage
+     * @param fileName  文件名
+     * @return MultipartFile 对象
+     */
+    public static MultipartFile convertBufferedImageToMultipartFile(BufferedImage image, String fileName) {
+        try(ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream()) {
+            // 将 BufferedImage 写入 ByteArrayOutputStream
+            ImageIO.write(image, "png", byteArrayOutputStream);
+            // 获取字节数组
+            byte[] imageBytes = byteArrayOutputStream.toByteArray();
+            // 使用 MockMultipartFile 创建 MultipartFile
+            return new MockMultipartFile("file", fileName, "image/png", imageBytes);
+        } catch (Exception e) {
+            log.error("convertBufferedImageToMultipartFile error", e);
+        }
+        return null;
     }
 }

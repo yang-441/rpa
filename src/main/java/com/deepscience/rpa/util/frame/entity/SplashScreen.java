@@ -56,4 +56,8 @@ public class SplashScreen {
     public void hideSplash() {
         splashWindow.setVisible(false);
     }
+
+    public void dispose() {
+        splashWindow.dispose();
+    }
 }

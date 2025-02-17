@@ -40,4 +40,9 @@ public interface EventHandler {
      * 处理事件
      */
     void handle();
+
+    /**
+     * 处理异常情况
+     */
+    void handleException();
 }

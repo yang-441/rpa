@@ -8,13 +8,19 @@ import com.deepscience.rpa.model.event.service.ActionEventReportService;
 import com.deepscience.rpa.model.live.service.LivePlanService;
 import com.deepscience.rpa.rpc.api.event.ActionEventReportApi;
 import com.deepscience.rpa.rpc.api.event.dto.ActionEventReportDTO;
+import com.deepscience.rpa.rpc.api.event.dto.ErrorReportDTO;
 import com.deepscience.rpa.rpc.api.event.enums.ActionEventEnum;
 import com.deepscience.rpa.rpc.api.live.dto.LivePlanDTO;
+import com.deepscience.rpa.util.ImageUtils;
+import com.deepscience.rpa.util.ScreenUtils;
 import feign.RetryableException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.sikuli.script.ScreenImage;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.awt.image.BufferedImage;
 import java.util.Objects;
 import java.util.concurrent.LinkedBlockingDeque;
 
@@ -67,6 +73,17 @@ public class ActionEventReportServiceImpl implements ActionEventReportService {
         if (Objects.nonNull(livePlanDTO)) {
             reportInfo(livePlanDTO);
         }
+    }
+
+    @Override
+    public void errorReport(LivePlanDTO livePlan) {
+        ErrorReportDTO errorReportDTO = convertErrorReport(livePlan);
+        ScreenImage capture = ScreenUtils.capture();
+        BufferedImage image = capture.getImage();
+        // BufferedImage 转 MultipartFile
+        MultipartFile imageFile = ImageUtils.convertBufferedImageToMultipartFile(image, System.currentTimeMillis() + ".png");
+        CommonResult<Boolean> result = actionEventReportApi.errorReport(imageFile, errorReportDTO);
+        log.info("errorReport result: {}, errorReportDTO: {}", result, errorReportDTO);
     }
 
     /**
@@ -158,6 +175,20 @@ public class ActionEventReportServiceImpl implements ActionEventReportService {
         dto.setPlanId(livePlan.getId());
         dto.setPlayPlatform(livePlan.getPlayPlatform());
         dto.setPlayPlanCode(livePlan.getPlayPlanCode());
+        return dto;
+    }
+
+    /**
+     * 转换错误上报信息
+     * @param livePlan 直播计划
+     * @return ErrorReportDTO 错误上报信息
+     */
+    private ErrorReportDTO convertErrorReport(LivePlanDTO livePlan) {
+        ErrorReportDTO dto = new ErrorReportDTO();
+        dto.setPlanId(livePlan.getId());
+        dto.setPlayPlatform(livePlan.getPlayPlatform());
+        dto.setPlayPlanCode(livePlan.getPlayPlanCode());
+        dto.setActionEvent(livePlan.getActionEvent());
         return dto;
     }
 }

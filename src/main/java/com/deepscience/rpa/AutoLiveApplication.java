@@ -37,7 +37,11 @@ public class AutoLiveApplication implements CommandLineRunner {
 
     public static void main(String[] args) {
         splashScreen = new SplashScreen();
-        SpringApplication.run(AutoLiveApplication.class, args);
+        try {
+            SpringApplication.run(AutoLiveApplication.class, args);
+        } finally {
+            splashScreen.dispose();
+        }
     }
 
     @Override

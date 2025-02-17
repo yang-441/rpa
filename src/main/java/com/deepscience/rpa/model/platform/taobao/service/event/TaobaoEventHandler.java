@@ -54,6 +54,11 @@ public interface TaobaoEventHandler extends EventHandler {
             // 迭代到下一个动作节点
             if (!actionContext.next()) {
                 if (VariableContainer.isRunning()) {
+                    // 事件上报
+                    if (!actionContext.isReportErrorPic()) {
+                        handleException();
+                        actionContext.setReportErrorPic(true);
+                    }
                     // 异常处理
                     actionHandlerFactory.handler(getLivePlatform(), TaobaoActionEnum.CLOSE_AND_EXIT);
                 } else {

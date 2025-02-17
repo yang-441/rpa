@@ -72,9 +72,9 @@ public class ActionContext {
     private volatile String liveId;
 
     /**
-     * 截图地址
+     * 是否截图上报
      */
-    private String picPath;
+    private volatile boolean reportErrorPic;
 
     /**
      * 是否有下一步动作

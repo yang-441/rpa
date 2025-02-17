@@ -8,6 +8,7 @@ import org.sikuli.script.Match;
 import org.sikuli.script.Pattern;
 import org.sikuli.script.Region;
 import org.sikuli.script.Screen;
+import org.sikuli.script.ScreenImage;
 
 import java.util.Objects;
 import java.util.Optional;
@@ -22,7 +23,7 @@ public class ScreenUtils {
     /**
      * 查询指定图片所在屏幕
      * @param imageEnum 图片枚举
-     * @return Integer
+     * @return Integer 屏幕id
      */
     public static Integer findScreenId(ImageEnum imageEnum) {
         int numberScreens = Screen.getNumberScreens();
@@ -48,6 +49,11 @@ public class ScreenUtils {
         return null;
     }
 
+    /**
+     * 查找指定图片
+     * @param imageEnum 图片枚举
+     * @return Match    匹配到的图片
+     */
     public static Match matchImg(ImageEnum imageEnum) {
         return Optional.ofNullable(VariableContainer.getActionContext())
                 .map(ActionContext::getScreenId)
@@ -55,10 +61,46 @@ public class ScreenUtils {
                 .orElse(null);
     }
 
+    /**
+     * 截图
+     * @return ScreenImage 截图
+     */
+    public static ScreenImage capture() {
+        return Optional.ofNullable(VariableContainer.getActionContext())
+                .map(ActionContext::getScreenId)
+                .map(id -> capture(id, null))
+                .orElse(null);
+    }
+
+    /**
+     * 截图
+     * @param region 区域
+     * @return ScreenImage 截图
+     */
+    public static ScreenImage capture(Region region) {
+        return Optional.ofNullable(VariableContainer.getActionContext())
+                .map(ActionContext::getScreenId)
+                .map(id -> capture(id, region))
+                .orElse(null);
+    }
+
+    /**
+     * 匹配图片
+     * @param match     匹配到的图片
+     * @param imageEnum 图片枚举
+     * @return Match 匹配到的图片
+     */
     public static Match matchImg(Match match, ImageEnum imageEnum) {
         return matchImg(match, imageEnum, null);
     }
 
+    /**
+     * 匹配图片
+     * @param match     匹配到的图片
+     * @param imageEnum 图片枚举
+     * @param sim       匹配度
+     * @return Match    匹配到的图片
+     */
     public static Match matchImg(Match match, ImageEnum imageEnum, Double sim) {
         Pattern pattern = new Pattern(imageEnum.getImage());
         if (Objects.nonNull(sim)) {
@@ -70,10 +112,23 @@ public class ScreenUtils {
                 .orElse(null);
     }
 
+    /**
+     * 匹配图片
+     * @param imageEnum 图片枚举
+     * @param timeout   超时时间
+     * @return Match    匹配到的图片
+     */
     public static Match matchImg(ImageEnum imageEnum, Double timeout) {
         return matchImg(imageEnum, timeout, null);
     }
 
+    /**
+     * 匹配图片
+     * @param imageEnum 图片枚举
+     * @param timeout   超时时间
+     * @param sim       匹配度
+     * @return Match    匹配到的信息
+     */
     public static Match matchImg(ImageEnum imageEnum, Double timeout, Double sim) {
         return Optional.ofNullable(VariableContainer.getActionContext())
                 .map(ActionContext::getScreenId)
@@ -81,10 +136,24 @@ public class ScreenUtils {
                 .orElse(null);
     }
 
+    /**
+     * 查找图片
+     * @param id        屏幕id
+     * @param imageEnum 图片枚举
+     * @return Match     匹配到的图片
+     */
     public static Match matchImg(int id, ImageEnum imageEnum) {
         return matchImg(id, imageEnum, null, null);
     }
 
+    /**
+     * 查找图片
+     * @param id        屏幕id
+     * @param imageEnum 图片枚举
+     * @param timeout   超时时间
+     * @param sim       匹配度
+     * @return Match
+     */
     public static Match matchImg(int id, ImageEnum imageEnum, Double timeout, Double sim) {
         Pattern pattern = new Pattern(imageEnum.getImage());
         if (Objects.nonNull(imageEnum.getSim())) {
@@ -96,6 +165,13 @@ public class ScreenUtils {
         return exits(new Screen(id), pattern, timeout);
     }
 
+    /**
+     * 查找图片
+     * @param region  区域
+     * @param pattern 模式
+     * @param timeout 超时时间
+     * @return Match
+     */
     public static Match exits(Region region, Pattern pattern, Double timeout) {
         if (Objects.isNull(region) || Objects.isNull(pattern)) {
             return null;
@@ -103,10 +179,38 @@ public class ScreenUtils {
         return region.exists(pattern, Objects.isNull(timeout) ? 5 : timeout);
     }
 
+    /**
+     * 优化查找图片
+     * @param id     屏幕id
+     * @param region 区域
+     * @return ScreenImage
+     */
+    public static ScreenImage capture(int id, Region region) {
+        Screen screen = new Screen(id);
+        if (Objects.nonNull(region)) {
+            return screen.capture(region);
+        } else {
+            return screen.capture();
+        }
+    }
+
+    /**
+     * 查找屏幕id
+     * @param id    屏幕id
+     * @param pattern 匹配
+     * @return Integer 下标
+     */
     private static Integer findScreenId(int id, Pattern pattern) {
         return findScreenId(id, pattern, null);
     }
 
+    /**
+     * 查找屏幕id
+     * @param id       屏幕id
+     * @param pattern  匹配
+     * @param timeout  超时时间
+     * @return Integer 下标
+     */
     private static Integer findScreenId(int id, Pattern pattern, Double timeout) {
         Screen screen = new Screen(id);
         Match exists = screen.exists(pattern, Objects.isNull(timeout) ? Settings.AutoWaitTimeout : timeout);

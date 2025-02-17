@@ -34,7 +34,6 @@ public interface RpaLoginBindApi {
 
     /**
      * 通过客户端凭证解绑
-     * @param clientCredentials 客户端凭证
      * @return CommonResult<Boolean>
      */
     @DeleteMapping("/unbind")

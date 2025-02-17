@@ -5,6 +5,7 @@ import cn.hutool.core.util.StrUtil;
 import com.deepscience.rpa.util.MsgUtils;
 import com.deepscience.rpa.util.frame.FrameUtils;
 import com.deepscience.rpa.util.frame.entity.LimitDocument;
+import com.deepscience.rpa.util.frame.entity.SplashScreen;
 import org.junit.Test;
 
 import javax.swing.*;
@@ -60,6 +61,13 @@ public class FrameTest {
 
         loginFrame.add(mainPanel);
         loginFrame.setVisible(true);
+
+        ThreadUtil.sleep(100000);
+    }
+
+    @Test
+    public void window() {
+        SplashScreen splashScreen = new SplashScreen();
 
         ThreadUtil.sleep(100000);
     }
