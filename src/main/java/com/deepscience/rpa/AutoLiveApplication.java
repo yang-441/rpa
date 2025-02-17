@@ -3,6 +3,7 @@ package com.deepscience.rpa;
 import ch.qos.logback.classic.Level;
 import cn.hutool.extra.spring.SpringUtil;
 import com.deepscience.rpa.common.service.LoggingService;
+import com.deepscience.rpa.util.frame.entity.SplashScreen;
 import com.deepscience.rpa.view.MainFrame;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.boot.CommandLineRunner;
@@ -29,7 +30,13 @@ import java.util.Objects;
 @SpringBootApplication
 public class AutoLiveApplication implements CommandLineRunner {
 
+    /**
+     * 程序启动画面
+     */
+    private static SplashScreen splashScreen;
+
     public static void main(String[] args) {
+        splashScreen = new SplashScreen();
         SpringApplication.run(AutoLiveApplication.class, args);
     }
 
@@ -49,7 +56,7 @@ public class AutoLiveApplication implements CommandLineRunner {
             LoggingService loggingService = SpringUtil.getBean(LoggingService.class);
             for (Map.Entry<String, String> entry : loggingService.getAllLogLevelConfig().entrySet()) {
                 if (!Objects.equals(entry.getValue(), logLevel)) {
-                    loggingService.setLogLevel(entry.getKey(),  level);
+                    loggingService.setLogLevel(entry.getKey(), level);
                 }
             }
         }
@@ -62,6 +69,8 @@ public class AutoLiveApplication implements CommandLineRunner {
             } catch (Exception e) {
                 log.error("mainFrame run error, 配置启动参数 -Djava.awt.headless=false", e);
                 throw e;
+            } finally {
+                splashScreen.hideSplash();
             }
         });
     }
