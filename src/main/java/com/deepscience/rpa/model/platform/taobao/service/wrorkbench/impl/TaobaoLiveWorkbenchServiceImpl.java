@@ -18,6 +18,7 @@ import com.deepscience.rpa.util.MsgUtils;
 import com.deepscience.rpa.util.OCRUtils;
 import com.deepscience.rpa.util.ScreenUtils;
 import com.deepscience.rpa.util.pcap4j.NetWorkUtils;
+import com.deepscience.rpa.util.process.ProcessKillerUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.sikuli.script.Button;
 import org.sikuli.script.Match;
@@ -210,6 +211,16 @@ public class TaobaoLiveWorkbenchServiceImpl implements TaobaoLiveWorkbenchServic
         // 关闭直播工作台
         if (actionContext.isHasNext()) {
             actionContext.setHasNext(closeLiveWorkbench());
+        }
+        // 杀死工作台进程
+        try {
+            String workbenchLocation = ConfigUtils.getWorkbenchLocation();
+            boolean kill = ProcessKillerUtils.kill(FileUtil.getName(workbenchLocation));
+            if (kill) {
+                log.info("工作台未正常关闭, 杀死工作台进程成功");
+            }
+        } catch (Exception e) {
+            log.error("关闭工作台进程失败", e);
         }
         return actionContext;
     }
@@ -448,6 +459,8 @@ public class TaobaoLiveWorkbenchServiceImpl implements TaobaoLiveWorkbenchServic
                 return true;
             }
         }
+        // kill进程
+        String workbenchLocation = ConfigUtils.getWorkbenchLocation();
         return false;
     }
 

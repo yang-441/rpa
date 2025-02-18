@@ -36,10 +36,12 @@ public class AutoLiveApplication implements CommandLineRunner {
     private static SplashScreen splashScreen;
 
     public static void main(String[] args) {
+        // 程序启动画面
         splashScreen = new SplashScreen();
         try {
             SpringApplication.run(AutoLiveApplication.class, args);
         } finally {
+            // 销毁程序启动画面
             splashScreen.dispose();
         }
     }
@@ -74,7 +76,8 @@ public class AutoLiveApplication implements CommandLineRunner {
                 log.error("mainFrame run error, 配置启动参数 -Djava.awt.headless=false", e);
                 throw e;
             } finally {
-                splashScreen.hideSplash();
+                // 销毁程序启动画面
+                splashScreen.dispose();
             }
         });
     }
