@@ -167,7 +167,7 @@ public class TaobaoPushUrlListener implements Runnable {
         if (StrUtil.isEmpty(hexStr)) {
             return null;
         }
-        log.info("数据包捕获: {}", hexStr);
+        log.debug("数据包捕获: {}", hexStr);
         int start = hexStr.indexOf(BASE_HEX);
         if (start < 0) {
             return null;

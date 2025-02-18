@@ -212,16 +212,7 @@ public class TaobaoLiveWorkbenchServiceImpl implements TaobaoLiveWorkbenchServic
         if (actionContext.isHasNext()) {
             actionContext.setHasNext(closeLiveWorkbench());
         }
-        // 杀死工作台进程
-        try {
-            String workbenchLocation = ConfigUtils.getWorkbenchLocation();
-            boolean kill = ProcessKillerUtils.kill(FileUtil.getName(workbenchLocation));
-            if (kill) {
-                log.info("工作台未正常关闭, 杀死工作台进程成功");
-            }
-        } catch (Exception e) {
-            log.error("关闭工作台进程失败", e);
-        }
+        killWorkbench();
         return actionContext;
     }
 
@@ -231,6 +222,7 @@ public class TaobaoLiveWorkbenchServiceImpl implements TaobaoLiveWorkbenchServic
         // 关闭弹窗
         closeAllWindows();
         actionContext.setHasNext(closeLiveWorkbench());
+        killWorkbench();
         return actionContext;
     }
 
@@ -391,6 +383,8 @@ public class TaobaoLiveWorkbenchServiceImpl implements TaobaoLiveWorkbenchServic
      * @return boolean
      */
     public boolean livePause() {
+        // 我知道了
+        processIKnow();
         // 暂停/结束直播
         Match match = ScreenUtils.matchImg(TaobaoImageEnum.LIVE_PAUSE_STOP, 20.0);
         if (Objects.nonNull(match) && match.click() == 1) {
@@ -399,6 +393,8 @@ public class TaobaoLiveWorkbenchServiceImpl implements TaobaoLiveWorkbenchServic
         } else {
             return false;
         }
+        // 我知道了
+        processIKnow();
         // 暂停直播
         match = ScreenUtils.matchImg(TaobaoImageEnum.LIVE_PAUSE);
         if (Objects.nonNull(match) && match.click() == 1) {
@@ -459,8 +455,6 @@ public class TaobaoLiveWorkbenchServiceImpl implements TaobaoLiveWorkbenchServic
                 return true;
             }
         }
-        // kill进程
-        String workbenchLocation = ConfigUtils.getWorkbenchLocation();
         return false;
     }
 
@@ -472,7 +466,7 @@ public class TaobaoLiveWorkbenchServiceImpl implements TaobaoLiveWorkbenchServic
         log.info("关闭弹窗...");
         boolean result = false;
         Match match = ScreenUtils.matchImg(TaobaoImageEnum.CLOSE_BUTTON_03);
-        for (int i = 0; i < 3; i++) {
+        for (int i = 0; i < 5; i++) {
             if (Objects.nonNull(match)) {
                 match = ScreenUtils.matchImg(match, TaobaoImageEnum.CLOSE_BUTTON_03_SUB);
                 if (Objects.nonNull(match) && match.click() == 1) {
@@ -606,6 +600,33 @@ public class TaobaoLiveWorkbenchServiceImpl implements TaobaoLiveWorkbenchServic
                 MsgUtils.writeSuccessMsg(StrUtil.format("抓取到淘宝直播推流码: {}", r));
             }
         });
+    }
+
+    /**
+     * 处理我知道了弹窗
+     * @return boolean
+     */
+    private boolean processIKnow() {
+        // 我知道了
+        Match match = ScreenUtils.matchImg(TaobaoImageEnum.I_KNOW);
+        if (Objects.nonNull(match) && match.click() == 1) {
+            log.info("处理我知道了弹窗...");
+            return true;
+        }
+        return false;
+    }
+
+    private void killWorkbench() {
+        // 杀死工作台进程
+        try {
+            String workbenchLocation = ConfigUtils.getWorkbenchLocation();
+            boolean kill = ProcessKillerUtils.kill(FileUtil.getName(workbenchLocation));
+            if (kill) {
+                log.info("工作台未正常关闭, 杀死工作台进程成功");
+            }
+        } catch (Exception e) {
+            log.error("关闭工作台进程失败", e);
+        }
     }
 
 }

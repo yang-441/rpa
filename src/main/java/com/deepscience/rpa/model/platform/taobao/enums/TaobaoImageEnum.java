@@ -152,6 +152,11 @@ public enum TaobaoImageEnum implements ImageEnum {
      */
     CLOSE_BUTTON_03_SUB(25, "images/taobao/closeButton_03_sub.png",
             null,"关闭按钮"),
+    /**
+     * 检测到直播无声 - 我知道了
+     */
+    I_KNOW(26, "images/taobao/button/iknow.png",
+            0.9, "我知道了"),
 
     /**
      * 验证码标题

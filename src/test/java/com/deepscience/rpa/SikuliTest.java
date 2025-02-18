@@ -27,14 +27,12 @@ public class SikuliTest {
     public void openFileTest() throws FindFailed, InterruptedException {
         int numberScreens = Screen.getNumberScreens();
         for (int i = 0; i < numberScreens; i++) {
-            Screen screen = new Screen(i);
-            String imagePath = TaobaoImageEnum.LIVING_TAG.getImagePath();
-            Match exists = ScreenUtils.matchImg(i, TaobaoImageEnum.CREATE_SESSION);
+            Match exists = ScreenUtils.matchImg(i, TaobaoImageEnum.I_KNOW);
             if (Objects.nonNull(exists)) {
                 exists.mouseMove();
-                BufferedImage liveIdImage = getLiveIdImage(exists);
-                System.out.println(OCR.readLine(liveIdImage));
-                System.out.println("匹配成功");
+                // BufferedImage liveIdImage = getLiveIdImage(exists);
+                // System.out.println(OCR.readLine(liveIdImage));
+                // System.out.println("匹配成功");
             }
         }
     }
