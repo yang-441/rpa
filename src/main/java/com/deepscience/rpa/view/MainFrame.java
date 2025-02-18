@@ -1,6 +1,5 @@
 package com.deepscience.rpa.view;
 
-import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Validator;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
@@ -15,6 +14,7 @@ import com.deepscience.rpa.util.ConfigUtils;
 import com.deepscience.rpa.util.ImageUtils;
 import com.deepscience.rpa.util.MsgUtils;
 import com.deepscience.rpa.util.frame.FrameUtils;
+import com.deepscience.rpa.util.frame.entity.FileFilterDocument;
 import com.deepscience.rpa.view.filter.LiveWorkbenchFilter;
 import com.deepscience.rpa.view.listener.CloseEventListener;
 import com.deepscience.rpa.view.listener.DebugEventListener;
@@ -278,32 +278,16 @@ public class MainFrame {
 
         // 创建文本输入框
         JTextField textField = new JTextField(20);
-        textField.setEnabled(false);
+        textField.setEnabled(true);
         textField.setDisabledTextColor(Color.BLACK);
+        textField.setDocument(new FileFilterDocument(() -> {
+            MsgUtils.writeSuccessMsg("选择直播工作台成功!");
+        }, () -> {
+            MsgUtils.writeErrorMsg("选择直播工作台失败, 请检查目录路径!");
+        }));
         if (StrUtil.isNotEmpty(workbenchLocation)) {
-            textField.setText(FileUtil.getName(workbenchLocation));
+            textField.setText(workbenchLocation);
         }
-
-        // 创建按钮
-        JButton button = new JButton("选择");
-        button.setFocusPainted(false);
-
-        // 点击按钮打开文件选择
-        button.addActionListener(e -> {
-            JFileChooser fileChooser = new JFileChooser();
-            // 指定可选择的文件名
-            fileChooser.setDialogTitle("选择直播工作台");
-            // 指定exe后缀
-            fileChooser.setFileFilter(liveWorkbenchFilter);
-            // 指定可以选取的文件名
-            int result = fileChooser.showOpenDialog(frame);
-            if (result == JFileChooser.APPROVE_OPTION) {
-                String path = fileChooser.getSelectedFile().getAbsolutePath();
-                String name = FileUtil.getName(path);
-                ConfigUtils.setWorkbenchLocation(path);
-                textField.setText(name);
-            }
-        });
 
         // 创建按钮并按行手动添加
         JPanel rowPanel = new JPanel();
@@ -312,9 +296,8 @@ public class MainFrame {
         // 设置缩进
         rowPanel.setBorder(BorderFactory.createEmptyBorder(0, 15, 0, 0));
         // 将组件添加到面板
-        rowPanel.add(new JLabel("选择直播工作台:"));
+        rowPanel.add(new JLabel("直播工作台路径:"));
         rowPanel.add(textField);
-        rowPanel.add(button);
         mainPanel.add(rowPanel);
     }
 
