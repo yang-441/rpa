@@ -263,7 +263,7 @@ public class TaobaoLiveWorkbenchServiceImpl implements TaobaoLiveWorkbenchServic
 
     private boolean waitCreateSessionPage() {
         // 等待场次编辑加载完毕
-        Match editPageMatch = ScreenUtils.matchImg(TaobaoImageEnum.SESSION_EDIT_CREATE, 10.0);
+        Match editPageMatch = ScreenUtils.matchImg(TaobaoImageEnum.SESSION_EDIT_CREATE, 30.0);
         if (Objects.nonNull(editPageMatch) && editPageMatch.mouseMove() == 1) {
             log.info("创建场次编辑页加载完毕...");
             MsgUtils.writeSuccessMsg("创建场次编辑页加载完毕...");
