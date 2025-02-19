@@ -1,14 +1,14 @@
 package com.deepscience.rpa.util.process;
 
 import cn.hutool.core.util.StrUtil;
-import com.deepscience.rpa.util.process.killer.WindowsProcessKillerUtils;
+import com.deepscience.rpa.util.process.killer.WindowsCmdUtils;
 
 /**
  * @author yangzhuo
  * @Description 杀死进程工具类
  * @date 2025/2/18 14:35
  */
-public class ProcessKillerUtils {
+public class CmdUtils {
     /**
      * 当前程序运行的操作系统
      */
@@ -22,7 +22,17 @@ public class ProcessKillerUtils {
     public static boolean kill(String processName) {
         // windows
         if (OS.contains("win")) {
-            return WindowsProcessKillerUtils.kill(processName);
+            return WindowsCmdUtils.kill(processName);
+        } else {
+            // 抛出不支持异常
+            throw new UnsupportedOperationException(StrUtil.format("不支持的操作系统: {}", OS));
+        }
+    }
+
+    public static boolean minimizeWindow() {
+        // windows
+        if (OS.contains("win")) {
+            return WindowsCmdUtils.minimizeWindow();
         } else {
             // 抛出不支持异常
             throw new UnsupportedOperationException(StrUtil.format("不支持的操作系统: {}", OS));

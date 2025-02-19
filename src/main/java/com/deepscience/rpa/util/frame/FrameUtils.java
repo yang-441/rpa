@@ -4,6 +4,7 @@ import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import com.deepscience.rpa.common.container.VariableContainer;
 import com.deepscience.rpa.common.context.ActionContext;
+import com.deepscience.rpa.util.process.CmdUtils;
 import com.deepscience.rpa.view.MainFrame;
 
 import javax.swing.*;
@@ -30,6 +31,7 @@ public class FrameUtils {
                     ActionContext actionContext = VariableContainer.getActionContext();
                     actionContext.setHasNext(true);
                 });
+        CmdUtils.minimizeWindow();
     }
 
     /**

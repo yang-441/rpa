@@ -18,7 +18,7 @@ import com.deepscience.rpa.util.MsgUtils;
 import com.deepscience.rpa.util.OCRUtils;
 import com.deepscience.rpa.util.ScreenUtils;
 import com.deepscience.rpa.util.pcap4j.NetWorkUtils;
-import com.deepscience.rpa.util.process.ProcessKillerUtils;
+import com.deepscience.rpa.util.process.CmdUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.sikuli.script.Button;
 import org.sikuli.script.Match;
@@ -620,7 +620,7 @@ public class TaobaoLiveWorkbenchServiceImpl implements TaobaoLiveWorkbenchServic
         // 杀死工作台进程
         try {
             String workbenchLocation = ConfigUtils.getWorkbenchLocation();
-            boolean kill = ProcessKillerUtils.kill(FileUtil.getName(workbenchLocation));
+            boolean kill = CmdUtils.kill(FileUtil.getName(workbenchLocation));
             if (kill) {
                 log.info("工作台未正常关闭, 杀死工作台进程成功");
             }
