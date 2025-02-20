@@ -27,7 +27,7 @@ public class SikuliTest {
     public void openFileTest() throws FindFailed, InterruptedException {
         int numberScreens = Screen.getNumberScreens();
         for (int i = 0; i < numberScreens; i++) {
-            Match exists = ScreenUtils.matchImg(i, TaobaoImageEnum.I_KNOW);
+            Match exists = ScreenUtils.matchImg(i, TaobaoImageEnum.LIVE_ID_SEARCH);
             if (Objects.nonNull(exists)) {
                 exists.mouseMove();
                 // BufferedImage liveIdImage = getLiveIdImage(exists);
@@ -41,9 +41,10 @@ public class SikuliTest {
     public void closeButtonTest() throws FindFailed {
         int numberScreens = Screen.getNumberScreens();
         for (int i = 0; i < numberScreens; i++) {
-            Match match = ScreenUtils.matchImg(i, TaobaoImageEnum.CLOSE_BUTTON_03);
+            Match match = ScreenUtils.matchImg(i, TaobaoImageEnum.LIVE_ID_SEARCH);
             if (Objects.nonNull(match)) {
-                match.mouseMove();
+                match.click();
+                match.paste("507712081445");
             }
         }
     }

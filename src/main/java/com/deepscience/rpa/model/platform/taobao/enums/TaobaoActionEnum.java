@@ -45,6 +45,10 @@ public enum TaobaoActionEnum implements ActionEnum {
      * 获取直播id
      */
     DO_GET_LIVE_ID(7, TaobaoActionConstants.DO_GET_LIVE_ID, "获取直播id"),
+    /**
+     * 通过直播间id检索直播
+     */
+    SEARCH_LIVE_BY_ID(8, TaobaoActionConstants.SEARCH_LIVE_BY_ID, "通过直播间id检索直播"),
 
     /**
      * 处理验证码

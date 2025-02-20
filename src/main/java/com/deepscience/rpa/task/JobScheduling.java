@@ -3,6 +3,7 @@ package com.deepscience.rpa.task;
 import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.util.StrUtil;
 import com.deepscience.rpa.common.container.VariableContainer;
+import com.deepscience.rpa.common.context.ActionContext;
 import com.deepscience.rpa.common.exception.util.ServiceExceptionUtil;
 import com.deepscience.rpa.handler.event.EventHandlerFactory;
 import com.deepscience.rpa.model.event.service.ActionEventReportService;
@@ -211,9 +212,15 @@ public class JobScheduling {
                 // 最小化应用
                 FrameUtils.minimizeProgram();
                 // 初始化上下文
-                VariableContainer.getActionContext().setLivePlan(livePlan);
-                // 执行事件处理
-                eventHandlerFactory.handler(livePlan);
+                ActionContext actionContext = VariableContainer.getActionContext();
+                actionContext.setLivePlan(livePlan);
+                actionContext.setLiveId(livePlan.getLiveAccount());
+                actionContext.setPushUrl(livePlan.getLiveUrl());
+                // 未填写直播间推流地址, 执行自动开播
+                if (StrUtil.isBlank(livePlan.getLiveUrl())) {
+                    // 执行事件处理
+                    eventHandlerFactory.handler(livePlan);
+                }
                 // 上报信息
                 result = actionEventReportService.reportInfo(livePlan);
                 callback.complete(param);

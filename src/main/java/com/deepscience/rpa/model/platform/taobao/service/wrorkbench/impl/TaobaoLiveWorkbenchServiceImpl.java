@@ -194,6 +194,21 @@ public class TaobaoLiveWorkbenchServiceImpl implements TaobaoLiveWorkbenchServic
         return actionContext;
     }
 
+    @Override
+    public ActionContext SearchLiveById() {
+        ActionContext actionContext = VariableContainer.getActionContext();
+        // 通过直播间id检索直播
+        if (actionContext.isHasNext()) {
+            actionContext.setHasNext(doSearchLiveById());
+        }
+
+        // 选择场次
+        if (actionContext.isHasNext()) {
+            actionContext.setHasNext(chooseSession());
+        }
+        return actionContext;
+    }
+
 
     @Override
     public ActionContext closeAllWindows() {
@@ -532,6 +547,41 @@ public class TaobaoLiveWorkbenchServiceImpl implements TaobaoLiveWorkbenchServic
      */
     public boolean getLiveId() {
         log.info("获取直播间id...");
+        if (!sessionManageList()) {
+            return false;
+        }
+        return getLiveIdBySessionListPage();
+    }
+
+    /**
+     * 通过直播间id检索直播
+     * @return boolean
+     */
+    public boolean doSearchLiveById() {
+        log.info("通过id检索直播间...");
+        String liveId = VariableContainer.getActionContext().getLiveId();
+        if (StrUtil.isBlank(liveId)) {
+            return false;
+        }
+        Match match = ScreenUtils.matchImg(TaobaoImageEnum.MANAGE_SESSION);
+        if (Objects.nonNull(match) && match.click() == 1) {
+            ThreadUtil.sleep(5, TimeUnit.SECONDS);
+        }
+        changeSessionList();
+        match = ScreenUtils.matchImg(TaobaoImageEnum.LIVE_ID_SEARCH);
+        if (Objects.nonNull(match) && match.click() == 1) {
+            match.paste(liveId);
+            match = ScreenUtils.matchImg(TaobaoImageEnum.LIVE_ID_SEARCH);
+            return Objects.isNull(match);
+        }
+        return false;
+    }
+
+    /**
+     * 打开场次管理列表
+     * @return boolean
+     */
+    private boolean sessionManageList() {
         Match match = ScreenUtils.matchImg(TaobaoImageEnum.MANAGE_SESSION);
         if (Objects.isNull(match) || match.click() != 1) {
             return false;
@@ -540,8 +590,9 @@ public class TaobaoLiveWorkbenchServiceImpl implements TaobaoLiveWorkbenchServic
         log.info("打开场次管理-列表模式成功...");
         if (changeSessionList()) {
             log.info("切换到列表模式...");
+            return true;
         }
-        return getLiveIdBySessionListPage();
+        return false;
     }
 
     /**

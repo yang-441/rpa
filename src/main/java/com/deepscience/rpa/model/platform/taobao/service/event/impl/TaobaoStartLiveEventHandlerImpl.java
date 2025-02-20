@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 
 /**
@@ -49,7 +50,12 @@ public class TaobaoStartLiveEventHandlerImpl implements TaobaoEventHandler {
 
     @Override
     public List<ActionEnum> getActions() {
-        return TaobaoActionConstants.START_LIVING_ACTION_LIST;
+        String liveId = VariableContainer.getActionContext().getLiveId();
+        if (Objects.isNull(liveId)) {
+            return TaobaoActionConstants.START_LIVING_ACTION_LIST;
+        } else {
+            return TaobaoActionConstants.START_LIVING_SEARCH_ACTION_LIST;
+        }
     }
 
     @Override

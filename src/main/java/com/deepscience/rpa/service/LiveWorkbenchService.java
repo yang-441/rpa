@@ -65,6 +65,12 @@ public interface LiveWorkbenchService {
     ActionContext doGetLiveId();
 
     /**
+     * 通过直播间id检索直播
+     * @return ActionContext
+     */
+    ActionContext SearchLiveById();
+
+    /**
      * 关闭所有窗口
      * @return ActionContext 动作上下文
      */

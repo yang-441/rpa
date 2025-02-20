@@ -35,6 +35,26 @@ public class TaobaoActionConstants {
     );
 
     /**
+     * 开播动作列表-检索直播间id开播模式
+     */
+    public static final List<ActionEnum> START_LIVING_SEARCH_ACTION_LIST = List.of(
+            // 1-启动工作台
+            TaobaoActionEnum.START_WORKBENCH,
+            // 2-查找工作台
+            TaobaoActionEnum.FIND_WORKBENCH,
+            // 3-检索直播
+            TaobaoActionEnum.SEARCH_LIVE_BY_ID,
+            // 4-开始直播
+            TaobaoActionEnum.START_LIVING,
+            // 5-暂停直播
+            TaobaoActionEnum.PAUSE_LIVING,
+            // 6-关闭所有弹窗
+            TaobaoActionEnum.CLOSE_ALL_WINDOW,
+            // 7-关闭工作台
+            TaobaoActionEnum.CLOSE_WORKBENCH
+    );
+
+    /**
      * 结束直播动作列表
      */
     public static final List<ActionEnum> END_LIVING_ACTION_LIST = List.of(
@@ -101,6 +121,11 @@ public class TaobaoActionConstants {
      * 执行获取直播间id
      */
     public static final String DO_GET_LIVE_ID = "taobao_cation_doGetLiveId";
+
+    /**
+     * 通过直播间id检索直播
+     */
+    public static final String SEARCH_LIVE_BY_ID = "search_live_by_id";
 
     /**
      * 关闭并退出

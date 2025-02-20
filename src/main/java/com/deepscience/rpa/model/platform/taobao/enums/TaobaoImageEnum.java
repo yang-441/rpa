@@ -126,7 +126,7 @@ public enum TaobaoImageEnum implements ImageEnum {
      * 按钮 - 场次列表
      */
     SESSION_LIST_BUTTON(20, "images/taobao/button/sessionListButton.png",
-            null,"结束直播"),
+            null,"场次列表"),
     /**
      * 标题 - 创建场次标题
      */
@@ -157,6 +157,16 @@ public enum TaobaoImageEnum implements ImageEnum {
      */
     I_KNOW(26, "images/taobao/button/iknow.png",
             0.9, "我知道了"),
+    /**
+     * tag - 未开播
+     */
+    UNLIVING_TAG(27, "images/taobao/unlivingTag.png",
+            null, "未开播"),
+    /**
+     * 搜索框 - 直播间id
+     */
+    LIVE_ID_SEARCH(28, "images/taobao/liveIdSearch.png",
+            null,"直播间id搜索框"),
 
     /**
      * 验证码标题
