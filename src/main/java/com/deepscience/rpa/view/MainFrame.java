@@ -1,5 +1,6 @@
 package com.deepscience.rpa.view;
 
+import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.lang.Validator;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
@@ -177,6 +178,10 @@ public class MainFrame {
      * @param version 版本号
      */
     private void checkRuntime(String version) {
+        String workbenchLocation = ConfigUtils.getWorkbenchLocation();
+        if (StrUtil.isNotBlank(workbenchLocation) && !FileUtil.exist(workbenchLocation)) {
+            ConfigUtils.setWorkbenchLocation(null);
+        }
         VersionInfoDTO versionInfo;
         try {
             // 校验版本号
