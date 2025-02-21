@@ -9,6 +9,7 @@ import com.deepscience.rpa.handler.event.EventHandlerFactory;
 import com.deepscience.rpa.model.event.service.ActionEventReportService;
 import com.deepscience.rpa.model.live.service.LivePlanService;
 import com.deepscience.rpa.model.login.service.LoginBindService;
+import com.deepscience.rpa.rpc.api.event.enums.ActionEventEnum;
 import com.deepscience.rpa.rpc.api.live.dto.LivePlanDTO;
 import com.deepscience.rpa.task.entity.DelayTaskModel;
 import com.deepscience.rpa.task.entity.TaskModel;
@@ -216,8 +217,11 @@ public class JobScheduling {
                 actionContext.setLivePlan(livePlan);
                 actionContext.setLiveId(livePlan.getLiveAccount());
                 actionContext.setPushUrl(livePlan.getLiveUrl());
-                // 未填写直播间推流地址, 执行自动开播
-                if (StrUtil.isBlank(livePlan.getLiveUrl())) {
+                // 开播时, 未填写直播间推流地址, 执行自动开播
+                if (ActionEventEnum.START_LIVING.equals(livePlan.getActionEvent())
+                        && StrUtil.isNotBlank(livePlan.getLiveUrl())) {
+                    log.info("开播时, 已填写直播间推流地址, 不执行自动化任务, livePlan: {}", livePlan);
+                } else {
                     // 执行事件处理
                     eventHandlerFactory.handler(livePlan);
                 }

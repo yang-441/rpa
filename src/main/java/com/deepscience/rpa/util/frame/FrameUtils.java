@@ -2,8 +2,6 @@ package com.deepscience.rpa.util.frame;
 
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
-import com.deepscience.rpa.common.container.VariableContainer;
-import com.deepscience.rpa.common.context.ActionContext;
 import com.deepscience.rpa.util.process.CmdUtils;
 import com.deepscience.rpa.view.MainFrame;
 
@@ -25,12 +23,6 @@ public class FrameUtils {
      * 最小化面板
      */
     public static void minimizeProgram() {
-        Optional.ofNullable(SpringUtil.getBean(MainFrame.class))
-                .ifPresent(mainFrame -> {
-                    mainFrame.setState(JFrame.ICONIFIED);
-                    ActionContext actionContext = VariableContainer.getActionContext();
-                    actionContext.setHasNext(true);
-                });
         CmdUtils.minimizeWindow();
     }
 

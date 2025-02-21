@@ -167,11 +167,6 @@ public class TaobaoLiveWorkbenchServiceImpl implements TaobaoLiveWorkbenchServic
         log.info("结束正在直播的直播间...");
         ActionContext actionContext = VariableContainer.getActionContext();
 
-        // 选择场次
-        if (actionContext.isHasNext()) {
-            actionContext.setHasNext(chooseSession());
-        }
-
         // 关闭直播
         if (actionContext.isHasNext()) {
             actionContext.setHasNext(liveEnd());
