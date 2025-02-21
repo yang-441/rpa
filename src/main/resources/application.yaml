@@ -1,7 +1,7 @@
 spring:
   application:
     name: auto-live
-    version: 0.0.2
+    version: 0.0.1
   jackson:
     date-format: "yyyy-MM-dd HH:mm:ss"
 
