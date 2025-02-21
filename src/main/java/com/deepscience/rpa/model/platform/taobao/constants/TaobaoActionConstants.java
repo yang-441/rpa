@@ -62,8 +62,8 @@ public class TaobaoActionConstants {
             TaobaoActionEnum.START_WORKBENCH,
             // 2-查找工作台
             TaobaoActionEnum.FIND_WORKBENCH,
-            // 3-获取直播间id
-            TaobaoActionEnum.DO_GET_LIVE_ID,
+            // 3-检索直播
+            TaobaoActionEnum.SEARCH_LIVE_BY_ID,
             // 4-结束直播
             TaobaoActionEnum.END_LIVING,
             // 5-关闭所有弹窗
