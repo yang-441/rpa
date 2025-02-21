@@ -12,7 +12,6 @@ import org.springframework.stereotype.Component;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * 调试事件监听
@@ -37,14 +36,7 @@ public class DebugEventListener implements ActionListener {
         livePlanDTO.setPlayPlatform(LivePlatform.TAOBAO);
         livePlanDTO.setActionEvent(ActionEventEnum.START_LIVING);
         VariableContainer.getActionContext().setScreenId(0);
-        CompletableFuture.runAsync(() -> actionEventReportService.errorReport(livePlanDTO))
-                .whenComplete((aVoid, throwable) -> {
-                    if (throwable != null) {
-                        log.error("error report failed", throwable);
-                    } else {
-                        log.info("error report success");
-                    }
-                });
+        actionEventReportService.errorReportAsync(livePlanDTO);
         // livePlanService.updateLivePlanTaskQueue();
     }
 }

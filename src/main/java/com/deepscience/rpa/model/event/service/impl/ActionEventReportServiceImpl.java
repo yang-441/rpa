@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.awt.image.BufferedImage;
 import java.util.Objects;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.LinkedBlockingDeque;
 
 /**
@@ -77,13 +78,27 @@ public class ActionEventReportServiceImpl implements ActionEventReportService {
 
     @Override
     public void errorReport(LivePlanDTO livePlan) {
+        MultipartFile imageFile = captureScreen();
         ErrorReportDTO errorReportDTO = convertErrorReport(livePlan);
-        ScreenImage capture = ScreenUtils.capture();
-        BufferedImage image = capture.getImage();
-        // BufferedImage 转 MultipartFile
-        MultipartFile imageFile = ImageUtils.convertBufferedImageToMultipartFile(image, System.currentTimeMillis() + ".png");
         CommonResult<Boolean> result = actionEventReportApi.errorReport(imageFile, errorReportDTO);
         log.info("errorReport result: {}, errorReportDTO: {}", result, errorReportDTO);
+    }
+
+
+    @Override
+    public void errorReportAsync(LivePlanDTO livePlan) {
+        MultipartFile imageFile = captureScreen();
+        CompletableFuture.runAsync(() -> {
+            ErrorReportDTO errorReportDTO = convertErrorReport(livePlan);
+            CommonResult<Boolean> result = actionEventReportApi.errorReport(imageFile, errorReportDTO);
+            log.info("errorReportAsync result: {}, errorReportDTO: {}", result, errorReportDTO);
+        }).whenComplete((aVoid, throwable) -> {
+            if (throwable != null) {
+                log.error("error report failed", throwable);
+            } else {
+                log.info("error report success");
+            }
+        });
     }
 
     /**
@@ -190,5 +205,12 @@ public class ActionEventReportServiceImpl implements ActionEventReportService {
         dto.setPlayPlanCode(livePlan.getPlayPlanCode());
         dto.setActionEvent(livePlan.getActionEvent());
         return dto;
+    }
+
+    private MultipartFile captureScreen() {
+        ScreenImage capture = ScreenUtils.capture();
+        BufferedImage image = capture.getImage();
+        // BufferedImage 转 MultipartFile
+        return ImageUtils.convertBufferedImageToMultipartFile(image, System.currentTimeMillis() + ".png");
     }
 }

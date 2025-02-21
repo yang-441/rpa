@@ -14,7 +14,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
 
 /**
  * @author yangzhuo
@@ -67,13 +66,6 @@ public class TaobaoEndLiveEventHandlerImpl implements TaobaoEventHandler {
     @Override
     public void handleException() {
         LivePlanDTO livePlan = VariableContainer.getActionContext().getLivePlan();
-        CompletableFuture.runAsync(() -> actionEventReportService.errorReport(livePlan))
-                .whenComplete((aVoid, throwable) -> {
-                    if (throwable != null) {
-                        log.error("error report failed", throwable);
-                    } else {
-                        log.info("error report success");
-                    }
-                });
+        actionEventReportService.errorReportAsync(livePlan);
     }
 }

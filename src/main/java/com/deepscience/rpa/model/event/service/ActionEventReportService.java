@@ -20,8 +20,14 @@ public interface ActionEventReportService {
     void retryReport();
 
     /**
-     * 上报失败直播计划
+     * 上报失败信息, 同步截屏, 同步上报
      * @param livePlan 直播计划信息
      */
     void errorReport(LivePlanDTO livePlan);
+
+    /**
+     * 异步上报失败信息, 同步截屏, 异步上报
+     * @param livePlan 直播计划信息
+     */
+    void errorReportAsync(LivePlanDTO livePlan);
 }
