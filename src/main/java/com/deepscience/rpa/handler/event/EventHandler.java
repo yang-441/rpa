@@ -42,7 +42,7 @@ public interface EventHandler {
     void handle();
 
     /**
-     * 处理异常情况
+     * 异常上报
      */
-    void handleException();
+    void errorReport();
 }
