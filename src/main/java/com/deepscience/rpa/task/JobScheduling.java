@@ -8,13 +8,13 @@ import com.deepscience.rpa.common.exception.util.ServiceExceptionUtil;
 import com.deepscience.rpa.handler.event.EventHandlerFactory;
 import com.deepscience.rpa.model.event.service.ActionEventReportService;
 import com.deepscience.rpa.model.live.service.LivePlanService;
-import com.deepscience.rpa.model.login.service.LoginBindService;
 import com.deepscience.rpa.rpc.api.event.enums.ActionEventEnum;
 import com.deepscience.rpa.rpc.api.live.dto.LivePlanDTO;
 import com.deepscience.rpa.task.entity.DelayTaskModel;
 import com.deepscience.rpa.task.entity.TaskModel;
 import com.deepscience.rpa.util.MsgUtils;
 import com.deepscience.rpa.util.frame.FrameUtils;
+import com.deepscience.rpa.view.service.CheckService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -53,7 +53,7 @@ public class JobScheduling {
     /**
      * 登录绑定服务
      */
-    private final LoginBindService loginBindService;
+    private final CheckService checkService;
 
     /**
      * 直播计划服务
@@ -76,7 +76,7 @@ public class JobScheduling {
     @Scheduled(initialDelay = 1000, fixedDelay = 100)
     public void execDelayTask() {
         try {
-            if (VariableContainer.isRunning() && loginBindService.isValidBind()) {
+            if (VariableContainer.isRunning() && checkService.startCheck()) {
                 doDelayTask();
             }
         } catch (Exception e) {
@@ -91,13 +91,17 @@ public class JobScheduling {
     @Scheduled(initialDelay = 1000, fixedDelay = 60 * 1000)
     public void updateLivePlanTaskQueue() {
         try {
-            if (VariableContainer.isRunning() && loginBindService.isValidBind()) {
+            if (VariableContainer.isRunning() && checkService.startCheck()) {
                 // 获取锁
                 LOCK.lock();
                 try {
                     livePlanService.updateLivePlanTaskQueue();
                     int size = DELAY_QUEUE.size();
-                    MsgUtils.writeSuccessMsg(StrUtil.format("任务队列已更新, 任务数[{}], 等待执行...", size));
+                    MsgUtils.writeSuccessMsg(StrUtil.format(
+                            "成功[{}]次, 失败[{}]次, 待执行数[{}]",
+                            VariableContainer.getStartSuccessCount(), VariableContainer.getStartFailCount(),
+                            size)
+                    );
                 } finally {
                     LOCK.unlock();
                 }

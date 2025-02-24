@@ -10,6 +10,7 @@ import com.deepscience.rpa.util.ImageUtils;
 import com.deepscience.rpa.util.MsgUtils;
 import com.deepscience.rpa.util.frame.FrameUtils;
 import com.deepscience.rpa.util.frame.entity.LimitDocument;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -57,6 +58,7 @@ public class LoginDialog {
     /**
      * 消息label
      */
+    @Getter
     private JLabel msgLabel;
 
     /**
@@ -264,10 +266,6 @@ public class LoginDialog {
         this.visible = visible;
         if (Objects.nonNull(mainDialog)) {
             mainDialog.setVisible(visible);
-            if (visible) {
-                Optional.ofNullable(SpringUtil.getBean(MainFrame.class))
-                        .ifPresent(mainDialog -> mainDialog.setVisible(false));
-            }
         }
     }
 

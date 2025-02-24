@@ -1,8 +1,10 @@
 package com.deepscience.rpa.common.container;
 
+import cn.hutool.extra.spring.SpringUtil;
 import com.deepscience.rpa.common.context.ActionContext;
 import com.deepscience.rpa.common.enums.RunningStateEnum;
 import com.deepscience.rpa.service.LiveWorkbenchService;
+import com.deepscience.rpa.view.MainFrame;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import lombok.extern.slf4j.Slf4j;
@@ -12,6 +14,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 /**
@@ -36,7 +39,7 @@ public abstract class VariableContainer {
      */
     private static final Cache<String, Object> CACHE = Caffeine.newBuilder()
             .maximumSize(256)
-            .expireAfterWrite(15, TimeUnit.MINUTES)
+            .expireAfterWrite(5, TimeUnit.MINUTES)
             .build();
 
     /**
@@ -60,6 +63,16 @@ public abstract class VariableContainer {
     private static final String STATE_BUTTON = "stateButton";
 
     /**
+     * 开播成功次数
+     */
+    private static final String START_SUCCESS_COUNT = "startSuccessCount";
+
+    /**
+     * 开播失败次数
+     */
+    private static final String START_FAIL_COUNT = "startFailCount";
+
+    /**
      * 设置全局运行状态
      * @param runningState 运行状态
      */
@@ -67,9 +80,9 @@ public abstract class VariableContainer {
         RUNNING_STATE = runningState;
         getActionContext().setHasNext(RunningStateEnum.RUNNING.equals(runningState));
         Optional.ofNullable(getStateButton())
-            .ifPresent(stateButton -> {
-                stateButton.setText(isRunning() ? "停止" : "启动");
-            });
+                .ifPresent(stateButton -> {
+                    stateButton.setText(isRunning() ? "停止" : "启动");
+                });
     }
 
     /**
@@ -81,6 +94,8 @@ public abstract class VariableContainer {
         getActionContext().setHasNext(RunningStateEnum.RUNNING.equals(RUNNING_STATE));
         JButton stateButton = getStateButton();
         stateButton.setText(isRunning() ? "停止" : "启动");
+        Optional.ofNullable(SpringUtil.getBean(MainFrame.class))
+                .ifPresent(mainFrame -> mainFrame.setTextFieldEnabled(!RunningStateEnum.RUNNING.equals(RUNNING_STATE)));
         return RUNNING_STATE;
     }
 
@@ -174,5 +189,49 @@ public abstract class VariableContainer {
             return;
         }
         CACHE.put(key, value);
+    }
+
+    /**
+     * 增加开播成功次数
+     */
+    public static void addStartSuccessCount() {
+        CONTAINER.compute(START_SUCCESS_COUNT, (k, v) -> {
+            if (Objects.isNull(v)) {
+                return new AtomicInteger(1);
+            }
+            AtomicInteger integer = (AtomicInteger) v;
+            integer.incrementAndGet();
+            return integer;
+        });
+    }
+
+    /**
+     * 增加开播失败次数
+     */
+    public static void addStartFailCount() {
+        CONTAINER.compute(START_FAIL_COUNT, (k, v) -> {
+            if (Objects.isNull(v)) {
+                return new AtomicInteger(1);
+            }
+            AtomicInteger integer = (AtomicInteger) v;
+            integer.incrementAndGet();
+            return integer;
+        });
+    }
+
+    /**
+     * 获取开播成功次数
+     */
+    public static int getStartSuccessCount() {
+        AtomicInteger integer = (AtomicInteger) CONTAINER.computeIfAbsent(START_SUCCESS_COUNT, k -> new AtomicInteger());
+        return integer.get();
+    }
+
+    /**
+     * 获取开播失败次数
+     */
+    public static int getStartFailCount() {
+        AtomicInteger integer = (AtomicInteger) CONTAINER.computeIfAbsent(START_FAIL_COUNT, k -> new AtomicInteger());
+        return integer.get();
     }
 }

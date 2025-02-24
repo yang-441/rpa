@@ -16,11 +16,11 @@ import com.deepscience.rpa.util.ImageUtils;
 import com.deepscience.rpa.util.MsgUtils;
 import com.deepscience.rpa.util.frame.FrameUtils;
 import com.deepscience.rpa.util.frame.entity.FileFilterDocument;
-import com.deepscience.rpa.view.filter.LiveWorkbenchFilter;
 import com.deepscience.rpa.view.listener.CloseEventListener;
 import com.deepscience.rpa.view.listener.DebugEventListener;
 import com.deepscience.rpa.view.listener.StartStopEventListener;
 import com.deepscience.rpa.view.listener.UnbindEventListener;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -52,18 +52,21 @@ public class MainFrame {
 
     /**
      * 登录对话框
+     * -- GETTER --
+     *  获取登录窗口
      */
+    @Getter
     private LoginDialog loginDialog;
+
+    /**
+     * 工作台路径文本输入框
+     */
+    private JTextField textField;
 
     /**
      * 主框架属性
      */
     private final MainFrameProperties mainFrameProperties;
-
-    /**
-     * 文件过滤器
-     */
-    private final LiveWorkbenchFilter liveWorkbenchFilter;
 
     /**
      * 开始事件监听
@@ -140,11 +143,6 @@ public class MainFrame {
         }
         loginDialog.run();
 
-        // 主窗口可见, 且工作台已配置
-        if (visible && StrUtil.isNotEmpty(ConfigUtils.getWorkbenchLocation())) {
-            VariableContainer.setRunningState(RunningStateEnum.RUNNING);
-        }
-
         // 创建文件选择框
         createFileChooser(mainPanel);
 
@@ -168,6 +166,12 @@ public class MainFrame {
 
         // 注册事件监听
         frame.addWindowListener(closeEventListener);
+
+        // 主窗口可见, 且工作台已配置
+        if (visible && StrUtil.isNotEmpty(ConfigUtils.getWorkbenchLocation())) {
+            VariableContainer.setRunningState(RunningStateEnum.RUNNING);
+            textField.setEnabled(false);
+        }
 
         // 设置窗口可见
         frame.setVisible(visible);
@@ -282,7 +286,7 @@ public class MainFrame {
         String workbenchLocation = ConfigUtils.getWorkbenchLocation();
 
         // 创建文本输入框
-        JTextField textField = new JTextField(20);
+        textField = new JTextField(20);
         textField.setEnabled(true);
         textField.setDisabledTextColor(Color.BLACK);
         textField.setDocument(new FileFilterDocument(() -> {
@@ -368,6 +372,14 @@ public class MainFrame {
         frame.setVisible(false);
     }
 
+    /**
+     * 设置文本框是否可编辑
+     * @param enabled 是否可编辑
+     */
+    public synchronized void setTextFieldEnabled(boolean enabled) {
+        textField.setEnabled(enabled);
+    }
+
     public synchronized void setState(int state) {
         if (Objects.nonNull(frame)) {
             frame.setState(state);
@@ -380,6 +392,9 @@ public class MainFrame {
     public synchronized void setVisible(boolean visible) {
         if (Objects.nonNull(frame)) {
             frame.setVisible(visible);
+            if (visible) {
+                startStopEventListener.actionPerformed(null);
+            }
         }
     }
 

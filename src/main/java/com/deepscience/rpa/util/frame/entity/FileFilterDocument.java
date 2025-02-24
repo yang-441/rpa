@@ -49,7 +49,7 @@ public class FileFilterDocument extends PlainDocument {
         File file = FileUtil.file(str);
         if (file.exists()) {
             for (String workBench : WORK_BENCH_LIST) {
-                if (str.endsWith(workBench)) {
+                if (file.isFile() && str.endsWith(workBench)) {
                     doValidCallback(str);
                     super.insertString(offset, workBench, attr);
                     return;
